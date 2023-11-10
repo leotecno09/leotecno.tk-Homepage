@@ -1,0 +1,126 @@
+<style>
+    body {
+        background-image: url('/static/images/main-bg.jpg');
+        background-size: cover;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<html>
+    <head>
+        <title>Bacheca | leotecno.tk</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-shadow shadow-lg fixed-top">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/updates">Bacheca</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="getRandomSite()">Sito casuale</button>
+                    </li>
+                    <!--li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img src="/static/images/accounts/letters/L.png" alt="Profilo Utente" class="rounded-circle" style="width: 40px; height: 40px;">
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li!-->
+                </ul>
+                {% if current_user.is_authenticated %}
+                    <a href="/account/settings" class="ms-auto" style="margin-right: 10px;">
+                        <img class="rounded-circle shadow-4-strong" height="40" weight="70" alt="usericon" src="/static/images/accounts/letters/L.png" />
+                    </a>
+                {% else %}
+                    <a class="btn btn-primary ms-auto" href="/account/login" style="margin-right: 10px;">Accedi</a>
+                {% endif %}
+            </div>
+        </nav>
+    </head>
+    <body>
+        <div class="container d-flex flex-column justify-content-center align-items-center" style="margin-top: 50px;">
+            <br>
+            <h1>Bacheca</h1>
+            <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 70px; width: 1000px; height: 1000px;">
+                <div class="card-body">
+                    <div class="card shadow-hover" style="width: 968px; background: rgba(255, 255, 255, 0.685);">
+                        <div class="card-header">
+                            Pubblicato il: 01/11/2023
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Questo è un test</h5>
+                            <p>La prima comunicazione scritta per testare la grafica. Incredibile!</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Scopri di più</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <footer class="bg-dark text-center text-lg-start shadow-lg">
+            <div class="text-center text-white p-3">
+                UAU!1!!1 SEI ARRIVATO ALLA FINE DELLA PAGINA!1!!11!<br>
+                © 2023 Copyright<br>
+                leotecno.tk
+            </div>
+        </footer>
+
+        <!--SCRIPTS-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+        <script src="/static/scripts/JS/random_site.js"></script>
+
+        <!--MODAL-->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Questo è un test</h5>
+                  <span type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                  </span>
+                </div>
+                <div class="modal-body">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum non nibh placerat, rutrum lacus et, varius urna. Proin et nulla pharetra tellus commodo lobortis eget sed massa. Proin vestibulum ipsum libero, quis egestas turpis laoreet et. Fusce eget massa facilisis, interdum nisi in, porttitor arcu. Aenean a ex varius, ornare sapien et, vehicula leo. Nam maximus laoreet ex quis elementum. Mauris tellus sapien, imperdiet sit amet nibh vitae, scelerisque malesuada eros. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus id magna maximus, consequat est vel, sodales quam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+
+Etiam dignissim luctus euismod. Etiam sit amet convallis tortor, rutrum efficitur mauris. Suspendisse potenti. Maecenas eget laoreet velit. Phasellus sit amet mollis quam. Curabitur vehicula sed ipsum a ornare. Morbi commodo nisi at nibh imperdiet, vel consectetur tellus commodo. Nulla volutpat tincidunt nunc, sit amet tincidunt tellus fringilla sed. Proin ac hendrerit mauris, non pulvinar enim. Nullam finibus ligula et gravida vehicula. Curabitur lorem dui, malesuada sit amet lacus sed, tincidunt faucibus enim. Maecenas quis fringilla libero.
+
+Nulla tellus arcu, finibus a pulvinar non, dignissim vitae nisl. Morbi a lectus quis purus vulputate scelerisque. Fusce malesuada lacus ac odio congue cursus at sit amet magna. Mauris erat quam, lobortis vitae erat nec, interdum blandit lacus. Duis at turpis ullamcorper risus malesuada rhoncus. Etiam at posuere mauris, et malesuada metus. Sed condimentum nisi sit amet erat aliquam ultricies. Maecenas et est ut risus tempus auctor. Nam sed odio ut erat mollis luctus. Ut risus nulla, ornare sit amet malesuada nec, sagittis id tellus. Nullam non fermentum magna. Sed tincidunt, ante a accumsan ullamcorper, ante risus cursus erat, et tincidunt justo odio eu lacus. Vivamus ut ipsum et elit imperdiet ultrices. Fusce volutpat erat non mauris luctus, id ultrices arcu pretium. Phasellus a nisl feugiat, elementum lorem a, aliquam dolor.
+
+Aenean id mauris eu justo maximus interdum. Nullam lobortis dolor vitae nulla bibendum, in tincidunt urna sagittis. Pellentesque facilisis nunc ut turpis commodo, a rhoncus magna tempor. Proin auctor, augue non convallis laoreet, leo lectus venenatis augue, et vulputate neque metus ut sapien. Aenean egestas lorem elit, aliquam ullamcorper mauris feugiat vel. Ut ultricies metus nisi, aliquam porta lacus euismod eget. Aliquam erat volutpat. Maecenas sed libero vitae mi condimentum consequat vitae et lorem. Mauris ut sagittis nibh, vel dapibus mauris. Nam sodales dui vel iaculis consectetur.
+
+Integer laoreet pulvinar nunc id pellentesque. Vestibulum pharetra purus diam, sed malesuada lacus tempus et. Vestibulum venenatis nunc est, non fermentum diam aliquam a. Vestibulum efficitur a sem interdum condimentum. Aenean nec cursus enim. Phasellus eget commodo dui. Praesent nec turpis at arcu consectetur ornare. Proin egestas leo nec ligula efficitur, vitae porta dolor pharetra. Duis consectetur pretium vulputate. Cras lacinia orci eros, ut feugiat tortor molestie pellentesque. Nulla non lacus sapien. Nulla facilisi. Pellentesque interdum elementum augue, ac placerat nibh. Nam elit odio, pellentesque ut vehicula ut, dignissim quis quam. Pellentesque tempor dui id eros consectetur, sit amet vulputate nunc interdum. Praesent id finibus quam.
+
+Aenean ultrices vel nisi id congue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla quis vehicula nunc. Sed in sagittis mi. Morbi consectetur erat et mauris malesuada mollis. In hac habitasse platea dictumst. Nam tempus vitae erat quis feugiat. Praesent posuere congue sapien a ultricies. Nulla ullamcorper arcu quis pharetra feugiat.
+
+Aenean tincidunt commodo neque, eget tristique risus eleifend sit amet. Maecenas condimentum tortor est, in malesuada urna tincidunt at. Curabitur tempor, purus non bibendum pharetra, orci neque luctus felis, a eleifend erat arcu vitae nunc. Fusce justo orci, consequat eu sapien ut, pharetra tristique lacus. Vestibulum diam mauris, faucibus sed lectus vitae, sodales tristique ligula. Aenean quam libero, vestibulum a euismod sed, fermentum sed risus. Maecenas lectus eros, mollis in tincidunt hendrerit, egestas ac nunc. Nam non arcu tincidunt, ullamcorper ipsum ut, malesuada nisi. Phasellus non porttitor metus. Cras tempor nibh nunc, in sodales elit tempus eget. In id ultricies mauris. Vestibulum convallis lorem luctus mi molestie, in placerat mi blandit.
+
+Maecenas mollis quam et felis consectetur finibus. Duis porttitor eget urna id dictum. Vestibulum tempor pretium risus, vel eleifend lectus ornare vel. Maecenas in tellus porttitor, egestas urna nec, varius purus. Donec convallis metus at sem tristique tincidunt. Nam tristique arcu massa, sed tristique orci sollicitudin vel. Ut dolor mi, ullamcorper eget urna molestie, egestas sollicitudin arcu. Praesent imperdiet ante tellus. Aliquam erat volutpat.
+
+Nulla eget augue non lorem volutpat ullamcorper ut at nisl. Praesent ut ante sed metus commodo pharetra sed sit amet odio. Curabitur eget pulvinar velit. Fusce et libero vitae felis malesuada tempor. Proin tortor elit, ultricies a ullamcorper eu, porttitor eu orci. Aenean ullamcorper turpis non sapien maximus, vitae eleifend nulla semper. Praesent ullamcorper nibh non tristique vehicula. Sed eleifend posuere ipsum, at consequat nulla feugiat a. Vestibulum porttitor neque a metus commodo consectetur. Vestibulum at tortor in lacus bibendum molestie vel quis sapien. Suspendisse sed elementum magna. Mauris in ullamcorper turpis. Cras auctor in erat nec ullamcorper.
+
+Quisque eget pulvinar tellus. Praesent ac velit id ipsum blandit sodales. Aliquam ut ex sed dui ullamcorper aliquam. Proin id porta neque. In vel pretium est. Integer aliquam consectetur est, sit amet pretium nisl molestie a. Pellentesque rhoncus tincidunt convallis. Curabitur ultricies ex nec porttitor condimentum. Sed ullamcorper vehicula purus. Vestibulum eget ex dolor.
+                </div>
+              </div>
+            </div>
+        </div>
+    </body>
+</html>
