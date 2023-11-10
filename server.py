@@ -179,6 +179,16 @@ def accountSetings():
 def accountInfo():
 	return render_template('account-info.html')
 
+@app.route('/account/security')
+@login_required
+def accountSecurity():
+	return render_template('account-security.html')
+
+@app.route('/account/connected-sites')
+@login_required
+def accountSites():
+	return render_template('account-sites.html')
+
 @app.route('/updates')
 def updates():
 	return render_template('updates.html')

@@ -71,7 +71,7 @@
                         <div class="card-body">
                             <a href="/account/info" class="custom-a" id="accountLink">Su di me</a>
                             <hr style="color: white;">
-                            <a href="/account/security" class="custom-a" id="securityLink">Privacy e Sicurezza</a>
+                            <a href="/account/security" class="custom-a text-white" id="securityLink">Privacy e Sicurezza</a>
                             <hr style="color: white;">
                             <a href="/account/connected-sites" class="custom-a" id="friendsLink">Siti collegati</a>
                             <hr style="color: white;">
@@ -80,54 +80,21 @@
                 </div>
                 <div class="col">
                     <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 70px; width: 1569px; height: 850px;">
-                        <div class="card-body text-center">
-                            <br>
-                            <img class="rounded-circle shadow-4-strong" height="100" weight="130" alt="usericon" src="/static/images/accounts/letters/L.png" />
-                            <br>
-                            <br>
-                            <h3>Ciao, {{current_user.username}}.</h3>
+                        <div class="card-body">
+                            <h4 class="text-center">Privacy e sicurezza</h4>
                             <hr class="mx-auto" style="width: 600px;">
                             <br>
-                            <h5>...cerchi qualcosa?</h5>
-                            <br>
-                            <div class="row justify-content-center">
-                                <div class="col-3 mb-3" style="margin-left: 70px;">
-                                    <div class="card" style="width: 18rem; background: rgba(255, 255, 255, 0.411); border: none;">
-                                        <div class="card-body">
-                                            <ion-icon name="person-outline" style="font-size: 50px; color: rgb(23, 96, 255);"></ion-icon>
-                                            <br>
-                                            <h5>Info su di me</h5>                                                                                          <!--UN PO' DECENTRATE-->
-                                            <p>Modifica e controlla i tuoi dati personali</p>
-                                        </div>
-                                        <ul class="list-group list-group-flush" style="background: rgba(255, 255, 255, 0.411);">
-                                            <a class="list-group-item" style="font-size: 15px; background-color: blue; color: white;" href="/account/info">Info su di me ></a>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-3 mb-3">
-                                    <div class="card" style="width: 18rem; background: rgba(255, 255, 255, 0.411); border: none;">
-                                        <div class="card-body">
-                                            <ion-icon name="lock-closed-outline" style="font-size: 50px; border: none; color: rgb(23, 96, 255);"></ion-icon>
-                                            <br>
-                                            <h5>Sicurezza dell'account</h5>
-                                            <p>Gestisci la sicurezza del tuo account: modifica la password e aggiungi metodi di sicurezza per accedere</p>
-                                        </div>
-                                        <ul class="list-group list-group-flush">
-                                            <a class="list-group-item" style="font-size: 15px; background-color: green; color: white;" href="/account/privacy">Privacy e Sicurezza ></a>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-3 mb-3">
-                                    <div class="card" style="width: 18rem; background: rgba(255, 255, 255, 0.411); border: none;">
-                                        <div class="card-body">
-                                            <ion-icon name="attach-outline" style="font-size: 50px; border: none; color: rgb(23, 96, 255);"></ion-icon>
-                                            <br>
-                                            <h5>Siti collegati</h5>
-                                            <p>Controlla e gestisci i siti a cui hai effettuato l'accesso con l'account leotecno.tk</p>
-                                        </div>
-                                        <ul class="list-group list-group-flush">
-                                            <a class="list-group-item" style="font-size: 15px; background-color: rgb(153, 5, 5); color: white;" href="/account/atteched-sites">Siti collegati ></a>
-                                        </ul>
+                            <div class="d-flex justify-content-center">
+                                <div class="card" style="background:rgba(255, 255, 255, 0.466); border: none; width: 800px; height: 400px;">
+                                    <div class="card-body">
+                                        <p style="font-weight: bold; color: rgb(70, 70, 70);">PASSWORD</p>
+                                        <button class="btn btn-primary">Modifica la password</button>
+                                        <hr style="width: 400px;">
+                                        <p style="font-weight: bold; color: rgb(70, 70, 70);">SICUREZZA AGGIUNTIVA</p>
+                                        <button class="btn btn-success">Token di accesso</button>
+                                        <p style="color: rgb(95, 95, 95);">(accedi inserendo solamente il tuo token di accesso univoco. Il token di accesso scade dopo 5 giorni)</p>
+                                        <button class="btn btn-primary" style="background-color: rgb(77, 0, 128); border-color: rgb(77, 0, 128);">Verifica in due passaggi</button>
+                                        <p style="color: rgb(95, 95, 95);">(accedi inserendo un codice inviato via mail, oppure, semplicemente con un click)</p>
                                     </div>
                                 </div>
                             </div>
