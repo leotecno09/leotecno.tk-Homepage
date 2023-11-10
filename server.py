@@ -4,7 +4,7 @@ from flask_bootstrap import Bootstrap
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
-import psycopg2
+import psycopg2																	# ueue commento da LenovoDiLeoKali
 from psycopg2 import Error
 import os
 import random
