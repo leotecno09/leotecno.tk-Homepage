@@ -33,7 +33,7 @@
                     <br>
                     <p class="card-text" style="color: white;">
                         <div class="form-group">
-                            <form action="/admin/SendMessage" method="POST">
+                            <form action="/admin/post-update" method="POST">
                                 <div class="row">
                                     <div class="col">
                                         <input class="form-control" type="text" id="title" name="title" placeholder="Titolo del messaggio..." required="true">
@@ -43,7 +43,7 @@
                                 <br>
                                 <textarea class="form-control" id="text" name="text" placeholder="Testo..." rows="5" required="true"></textarea>
                                 <br>
-                                <input type="checkbox" checked="true" id="buttonEnabler" name="buttonEnabler">&nbsp;<label style="color: white;">Bottone (scopri di più)</label>
+                                <input type="checkbox" checked="true" id="buttonEnabler" name="popupValue">&nbsp;<label style="color: white;">Bottone (scopri di più)</label>
                                 <br>
                                 <textarea id="popupText" name="popupText" class="form-control" placeholder="Testo del popup" rows="5" required="true"></textarea>
                                 <br>

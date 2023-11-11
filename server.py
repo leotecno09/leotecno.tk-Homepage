@@ -191,14 +191,63 @@ def accountSites():
 
 @app.route('/updates')
 def updates():
-	return render_template('updates.html')
+	cur.execute('SELECT * FROM updates')
+	result = cur.fetchall()
 
-@app.route('/admin/post-update')
+	#title = result[0]
+	#text = result[1]
+	#popup = result[2]
+	#popuptext = result[3]
+	#date = result[4]
+
+	#if popup == 'on':
+	#	popup = True
+
+	#else:
+	#	popup = False
+	
+	return render_template('updates.html', result=result)
+
+@app.route('/admin/post-update', methods=['GET', 'POST'])
 @login_required
 def adminPostUpdate():
-	checkUserRole()
-	flash("Non sei autorizzato ad accedere a questa pagina. L'ID non corrisponde.", category='error')
-	return redirect(url_for('root'))
+	if request.method == 'POST':
+		title = request.form['title']
+		text = request.form['text']
+		popup = request.form.get('popupValue')
+		if popup == 'on':
+			popup = True
+			popupText = request.form['popupText']
+
+			try:
+				cur.execute('INSERT INTO updates (title, text, popup, popuptext)' 'VALUES (%s, %s, %s, %s)', (format(title), format(text), format(popup), format(popupText)))
+				conn.commit()
+				return redirect(url_for('updates'))
+			
+			except Error as e:
+				print(e)
+				return redirect(url_for('error', e=e))
+		else:
+			popup = False
+			popupText = None
+
+			try:
+				cur.execute('INSERT INTO updates (title, text)' 'VALUES (%s, %s)', (format(title), format(text)))
+				conn.commit()
+				return redirect(url_for('updates'))
+			
+			except Error as e:
+				print(e)
+				return redirect(url_for('error', e=e))
+
+	else:
+		userRole = checkUserRole()
+		if userRole == 'admin':
+			return render_template('create-post.html')
+		
+		else:
+			flash('Non hai il permesso di accedere a questa pagina.', category='error')
+			return redirect(url_for('root'))
 
 @app.route('/policies/termini-di-servizio2023')
 def tds():
@@ -206,7 +255,7 @@ def tds():
 
 @app.route('/error')
 def error():
-	error = "psycopg2.errors.InFailedSqlTransaction: ERRORE:  la transazione corrente è interrotta, i comandi saranno ignorati fino alla fine del blocco della transazione"
+	error = request.args.get('e')
 	return render_template('global-error.html', error=error)
 
 @app.route('/login-test')
