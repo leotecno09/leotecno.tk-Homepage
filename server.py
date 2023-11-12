@@ -36,14 +36,17 @@ def load_user(id):
 
 		username = result[0]
 		email = result[1]
+		logoPath = result[7]
 
 		user = User(id)
 		user.username = username
 		user.email = email
+		user.logo = logoPath
 		return user
 	
 	except Error as e:
 		return redirect(url_for('error'))
+	#return "Ciao"
 
 # DATABASE
 conn = psycopg2.connect(host = "localhost", database = "ltk", user = os.environ['postgres'], password = os.environ['PASSWORD_PSQL']) # CONFIGURARE CON APPOSITO SERVER PSQL DA CONFIGURARE
@@ -59,6 +62,11 @@ def checkUserRole():
 	role = result[6]
 	
 	return role
+
+# ERROR HANDLER
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 # ROUTES
 @app.route('/')
@@ -85,6 +93,20 @@ def register():
 
 		userID = ''.join([str(random.randint(0, 9)) for _ in range(9)])
 
+		# LOGO CHOOSING (fatto da culo)
+		letter = username[0]
+		letter.upper()
+		#print(letter)
+		logoDir = "Q:/Workstation/leotecnotk-new-homepage/static/images/accounts/letters"
+		dirProvv = '/static/images/accounts/letters'
+		
+		logos = os.listdir(logoDir)
+
+		logo = [file for file in logos if file.startswith(letter)]
+		fileName = logo[0]
+		logoPath = f"{dirProvv}/{fileName}"
+		#print(logoPath)
+
 		try:
 			cur.execute('SELECT * FROM accounts WHERE email = %s', (email,))
 			result = cur.fetchone()
@@ -109,7 +131,7 @@ def register():
 				hashed_password = generate_password_hash(password, method='scrypt')
 
 				try:
-					cur.execute('INSERT INTO accounts (username, email, password, id, created_on)' 'VALUES (%s, %s, %s, %s, %s)', (format(username), format(email), format(hashed_password), int(userID), format(creation_date)))
+					cur.execute('INSERT INTO accounts (username, email, password, id, created_on, logo)' 'VALUES (%s, %s, %s, %s, %s, %s)', (format(username), format(email), format(hashed_password), int(userID), format(creation_date), format(logoPath)))
 					conn.commit()
 
 					return '[POST] OK'
@@ -139,12 +161,14 @@ def login():
 				user_id = result[3]
 				usernameFromDB = result[0]
 				email = result[1]
+				logoPath = result[7]
 				print (format(stored_password), format(password))
 				
 				if check_password_hash(stored_password, password):
 					user = User(id=user_id)
 					user.username = usernameFromDB
 					user.email = email
+					user.logo = logoPath
 					login_user(user, remember=True)
 					return redirect(url_for('root'))
 				
