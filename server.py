@@ -162,7 +162,7 @@ def login():
 				usernameFromDB = result[0]
 				email = result[1]
 				logoPath = result[7]
-				print (format(stored_password), format(password))
+				#print (format(stored_password), format(password))
 				
 				if check_password_hash(stored_password, password):
 					user = User(id=user_id)
@@ -212,6 +212,45 @@ def accountSecurity():
 @login_required
 def accountSites():
 	return render_template('account-sites.html')
+
+@app.route('/account/actions/changePassword', methods=['POST'])
+def changePassword():
+	currentPassword = request.form['currentPassword']
+	newPassword = request.form['newPassword']
+	confirmNewPassword = request.form['confirmNewPassword']
+	id = current_user.id
+
+	# CHECK CURRENT PASSWORD
+	try:
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+		
+		stored_password = result[2]
+
+		if check_password_hash(stored_password, currentPassword):
+			
+			if newPassword == confirmNewPassword:
+				new_hashed_password = generate_password_hash(newPassword, method='scrypt')
+
+				cur.execute('UPDATE accounts SET password = %s WHERE id = %s', (format(new_hashed_password), int(id)))
+				conn.commit()
+
+				flash('Password aggiornata con successo.')
+				return redirect(url_for('accountSecurity'))	
+
+			else:
+				flash('Le due nuove password non corrispondono.', category='error')
+				return redirect(url_for('accountSecurity'))
+
+		else:
+			flash('La password corrente è errata.', category='error')
+			return redirect(url_for('accountSecurity'))
+	
+	except Error as e:
+		return redirect(url_for('error', e=e))
+
+
+
 
 @app.route('/updates')
 def updates():
