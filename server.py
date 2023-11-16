@@ -1,6 +1,7 @@
 # IMPORTAZIONE MODULI
 from flask import Flask, render_template, flash, url_for, request, redirect
 from flask_bootstrap import Bootstrap
+from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
@@ -19,6 +20,16 @@ Bootstrap(app)
 
 # FLASK CONFIGURATIONS
 app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
+
+#FLASK MAIL
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'leochat994@gmail.com'
+app.config['MAIL_PASSWORD'] = 'vunu hbvz oqpd lzob'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEFAULT_SENDER'] = 'leochat994@gmail.com'
+mail = Mail(app)
 
 # LOGIN MANAGER
 login_manager = flask_login.LoginManager()
@@ -248,6 +259,36 @@ def changePassword():
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))
+	
+@app.route('/account/actions/enable2FA', methods=['POST'])
+def enable2FA():
+	password = request.form['password']
+	id = current_user.id
+
+	try:
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+
+		stored_password = result[2]
+
+		if check_password_hash(stored_password, password):
+
+			try:
+				cur.execute("UPDATE accounts SET two_steps = 'TRUE' WHERE id = %s", (int(id),))
+				conn.commit()
+
+				flash('Verifica in due passaggi attivata con successo.')
+				return redirect(url_for('accountSecurity'))
+			
+			except Error as e:
+				return redirect(url_for('error', e=e))
+			
+		else:
+			flash('Password errata.', cateogry='error')
+			return redirect(url_for('accountSecurity'))
+	
+	except Error as e:
+		return redirect(url_for('error', e=e))
 
 
 
@@ -325,6 +366,28 @@ def error():
 @login_required
 def logintest():
 	return f"Questa è una pagina protetta. Benvenuto, {current_user.id}!"
+
+@app.route('/send-me-mail')
+def sendmail():
+	userMail = 'leotecno09@gmail.com'
+	code = '123456'
+
+	# E-MAIL STRUCTURE
+	subject = 'leotecno.tk - Codice di accesso (verifica in due passaggi)'
+	email_body = f'Il tuo codice di accesso è: {code}'
+	recipient = userMail
+
+	msg = Message(subject, recipients=[recipient])
+	msg.body = email_body
+	
+	try:
+		mail.send(msg)
+		print("Email di verifica inviata")
+		return 'OK'
+	
+	except Error as e:
+		return redirect(url_for('error', e=e))
+	
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=80, debug=True)
