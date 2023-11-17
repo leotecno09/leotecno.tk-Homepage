@@ -24,8 +24,8 @@ app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
 #FLASK MAIL
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'leochat994@gmail.com'
-app.config['MAIL_PASSWORD'] = 'vunu hbvz oqpd lzob'
+app.config['MAIL_USERNAME'] 'xxxxxz'
+app.config['MAIL_PASSWORD'] = 'xxxxxxx'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = 'leochat994@gmail.com'
