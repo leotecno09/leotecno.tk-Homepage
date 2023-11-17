@@ -25,8 +25,8 @@ app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
 #FLASK MAIL
 app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'api'
-app.config['MAIL_PASSWORD'] = '9b5388ab51c028ad5e1e00323d2e1408'
+app.config['MAIL_USERNAME'] = 'xxx'
+app.config['MAIL_PASSWORD'] = 'xxxxxxxxxxxxxxxxxxxxxxx'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -264,8 +264,8 @@ def twoStepVerification():
 			login_user(user, remember=True)
 
 			cur.execute('DELETE FROM login_codes WHERE token = %s', (token,))
-			#token = 0
-			#code = 0
+			token = 0
+			code = 0
 
 			return redirect(url_for('root'))
 
