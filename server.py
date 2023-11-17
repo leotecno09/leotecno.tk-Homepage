@@ -10,6 +10,7 @@ from psycopg2 import Error
 import os
 import random
 import flask_login
+import secrets
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 # FLASK THINGS
@@ -22,13 +23,20 @@ Bootstrap(app)
 app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
 
 #FLASK MAIL
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'leochat994@gmail.com'
-app.config['MAIL_PASSWORD'] = 'vunu hbvz oqpd lzob'
+app.config['MAIL_USERNAME'] = 'api'
+app.config['MAIL_PASSWORD'] = '9b5388ab51c028ad5e1e00323d2e1408'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_DEFAULT_SENDER'] = 'leochat994@gmail.com'
+
+#app.config['MAIL_SERVER'] = 'smtp-relay.gmail.com'
+#app.config['MAIL_PORT'] = 587
+#app.config['MAIL_USERNAME'] = 'leochat994@gmail.com'
+#app.config['MAIL_PASSWORD'] = 'Leonardo*09'
+#app.config['MAIL_USE_TLS'] = True
+#app.config['MAIL_USE_SSL'] = False
+
 mail = Mail(app)
 
 # LOGIN MANAGER
@@ -173,15 +181,43 @@ def login():
 				usernameFromDB = result[0]
 				email = result[1]
 				logoPath = result[7]
+				two_step = result[8]
+				print(two_step)
 				#print (format(stored_password), format(password))
 				
 				if check_password_hash(stored_password, password):
-					user = User(id=user_id)
-					user.username = usernameFromDB
-					user.email = email
-					user.logo = logoPath
-					login_user(user, remember=True)
-					return redirect(url_for('root'))
+					if two_step == "TRUE":
+						token = secrets.token_hex()
+						login_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+						message = Message (
+							subject = 'Codice di autenticazione - Verifica in due passaggi leotecno.tk',
+							recipients = [email],
+							sender = 'security@leotecno.tk'						
+						)
+
+						message.body = f"Ecco il tuo codice di autenticazione per la verifica in due passaggi: {login_code}"
+
+						try:
+							mail.send(message)
+							print("[SECURITY] TwoSteps email sended!")
+
+							# QUERY FOR DB
+							cur.execute('INSERT INTO login_codes (token, code)' 'VALUES (%s, %s)', (format(token), int(login_code),))
+							conn.commit()
+
+							return redirect(url_for('twoStepVerification', token=token, user_id=user_id))			
+						
+						except Error as e:
+							return redirect(url_for('error', e=e))
+
+					else:
+						user = User(id=user_id)
+						user.username = usernameFromDB
+						user.email = email
+						user.logo = logoPath
+						login_user(user, remember=True)
+						return redirect(url_for('root'))
 				
 				else:
 					flash("Password non corretta", category="error")
@@ -196,6 +232,54 @@ def login():
 			return redirect(url_for('error'))
 	else:	
 		return render_template('login.html')
+	
+@app.route('/account/login/twostepsverification', methods=['GET', 'POST'])
+def twoStepVerification():
+	if request.method == 'POST':
+		token = request.form['token']
+		user_id = request.form['user_id']
+		code = request.form['code']
+		print(code)
+		print(token)
+		print(user_id)
+
+		cur.execute('SELECT * FROM login_codes WHERE token = %s', (token,))
+		result = cur.fetchone()
+
+		codeFromDB = result[1]
+		print(codeFromDB)
+
+		if int(code) == int(codeFromDB):
+			cur.execute('SELECT * FROM accounts WHERE id = %s', (int(user_id),))
+			result = cur.fetchone()
+
+			usernameFromDB = result[0]
+			email = result[1]
+			logoPath = result[7]
+
+			user = User(id=user_id)
+			user.username = usernameFromDB
+			user.email = email
+			user.logo = logoPath
+			login_user(user, remember=True)
+
+			cur.execute('DELETE FROM login_codes WHERE token = %s', (token,))
+			#token = 0
+			#code = 0
+
+			return redirect(url_for('root'))
+
+		else:
+			flash('Codice errato', category='error')
+			return redirect(url_for('twoStepVerification', token=token, user_id=user_id))	
+
+
+
+	else:
+		token = request.args.get('token')
+		user_id = request.args.get('user_id')
+		return render_template('2fa.html', token=token, user_id=user_id)
+
 	
 @app.route('/account/logout')
 @login_required
@@ -355,7 +439,7 @@ def adminPostUpdate():
 
 @app.route('/policies/termini-di-servizio2023')
 def tds():
-	return "termini di servizio leotecno.tk..."
+	return render_template('tds2023.html')
 
 @app.route('/error')
 def error():
@@ -369,19 +453,16 @@ def logintest():
 
 @app.route('/send-me-mail')
 def sendmail():
-	userMail = 'leotecno09@gmail.com'
-	code = '123456'
+	message = Message(
+		subject = 'Hello from Flask',
+		recipients = ['leotecno09@gmail.com'],
+		sender = 'flask@leotecno.tk'
+	)
 
-	# E-MAIL STRUCTURE
-	subject = 'leotecno.tk - Codice di accesso (verifica in due passaggi)'
-	email_body = f'Il tuo codice di accesso è: {code}'
-	recipient = userMail
-
-	msg = Message(subject, recipients=[recipient])
-	msg.body = email_body
+	message.body = "Questo è un test."
 	
 	try:
-		mail.send(msg)
+		mail.send(message)
 		print("Email di verifica inviata")
 		return 'OK'
 	
