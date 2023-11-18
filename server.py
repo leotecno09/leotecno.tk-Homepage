@@ -11,6 +11,7 @@ import os
 import random
 import flask_login
 import secrets
+import pyotp
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 # FLASK THINGS
@@ -26,7 +27,7 @@ app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
 app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USERNAME'] = 'xxx'
-app.config['MAIL_PASSWORD'] = 'xxxxxxxxxxxxxxxxxxxxxxx'
+app.config['MAIL_PASSWORD'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -239,9 +240,9 @@ def twoStepVerification():
 		token = request.form['token']
 		user_id = request.form['user_id']
 		code = request.form['code']
-		print(code)
-		print(token)
-		print(user_id)
+		#print(code)
+		#print(token)
+		#print(user_id)
 
 		cur.execute('SELECT * FROM login_codes WHERE token = %s', (token,))
 		result = cur.fetchone()
@@ -264,6 +265,7 @@ def twoStepVerification():
 			login_user(user, remember=True)
 
 			cur.execute('DELETE FROM login_codes WHERE token = %s', (token,))
+			conn.commit()
 			token = 0
 			code = 0
 
@@ -279,6 +281,7 @@ def twoStepVerification():
 		token = request.args.get('token')
 		user_id = request.args.get('user_id')
 		return render_template('2fa.html', token=token, user_id=user_id)
+	
 
 	
 @app.route('/account/logout')
@@ -301,7 +304,16 @@ def accountInfo():
 @app.route('/account/security')
 @login_required
 def accountSecurity():
-	return render_template('account-security.html')
+	try:
+		id = current_user.id
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+
+		two_steps = result[8]
+		return render_template('account-security.html', two_steps=two_steps)
+	
+	except Error as e:
+		return redirect(url_for('error', e=e))		
 
 @app.route('/account/connected-sites')
 @login_required
@@ -344,6 +356,74 @@ def changePassword():
 	except Error as e:
 		return redirect(url_for('error', e=e))
 	
+@app.route('/account/actions/changeUsername', methods=['POST'])
+@login_required
+def changeUsername():
+	currentPassword = request.form['currentPassword']
+	newUsername = request.form['newUsername']
+
+	id = current_user.id
+
+	try:
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+
+		stored_password = result[2]
+
+		if check_password_hash(stored_password, currentPassword):
+			
+			try:
+				cur.execute('UPDATE accounts SET username = %s WHERE id = %s', (format(newUsername), int(id)))
+				conn.commit()
+
+				flash('Username aggiornato con successo.')
+				return redirect(url_for('accountInfo'))
+			
+			except Error as e:
+				return redirect(url_for('error', e=e))
+		
+		else:
+			flash('Password non corretta.', category='error')
+			return redirect(url_for('accountInfo'))
+
+	except Error as e:
+		return redirect(url_for('error', e=e))
+	
+@app.route('/account/actions/changeEmail', methods=['POST'])
+@login_required
+def changeEmail():
+	currentPassword = request.form['currentPassword']
+	newEmail = request.form['newEmail']
+
+	id = current_user.id
+
+	try:
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+
+		stored_password = result[2]
+
+		if check_password_hash(stored_password, currentPassword):
+			
+			try:
+				cur.execute('UPDATE accounts SET email = %s WHERE id = %s', (format(newEmail), int(id)))
+				conn.commit()
+
+				flash('Email aggiornata con successo.')
+				return redirect(url_for('accountInfo'))
+			
+			except Error as e:
+				return redirect(url_for('error', e=e))
+		
+		else:
+			flash('Password non corretta.', category='error')
+			return redirect(url_for('accountInfo'))
+
+	except Error as e:
+		return redirect(url_for('error', e=e))
+
+
+
 @app.route('/account/actions/enable2FA', methods=['POST'])
 def enable2FA():
 	password = request.form['password']
@@ -368,6 +448,36 @@ def enable2FA():
 				return redirect(url_for('error', e=e))
 			
 		else:
+			flash('Password errata.', cateogry='error')
+			return redirect(url_for('accountSecurity'))
+	
+	except Error as e:
+		return redirect(url_for('error', e=e))
+	
+@app.route('/account/actions/disable2FA', methods=['POST'])
+def disable2FA():
+	password = request.form['password']
+	id = current_user.id
+
+	try:
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+
+		stored_password = result[2]
+
+		if check_password_hash(stored_password, password):
+
+			try:
+				cur.execute("UPDATE accounts SET two_steps = '' WHERE id = %s", (int(id),))
+				conn.commit()
+
+				flash('Verifica in due passaggi disattivata con successo.')
+				return redirect(url_for('accountSecurity'))
+			
+			except Error as e:
+				return redirect(url_for('error', e=e))
+
+		else:		
 			flash('Password errata.', cateogry='error')
 			return redirect(url_for('accountSecurity'))
 	
@@ -436,6 +546,22 @@ def adminPostUpdate():
 		else:
 			flash('Non hai il permesso di accedere a questa pagina.', category='error')
 			return redirect(url_for('root'))
+
+@app.route('/admin/users-management', methods=['GET', 'POST'])
+@login_required
+def adminUserManagement():
+	if request.method == 'POST':
+		return "post"		
+
+	else:
+		userRole = checkUserRole()
+		if userRole == 'admin':
+			return render_template('user-management.html')
+		
+		else:
+			flash('Non hai il permesso di accedere a questa pagina.', category='error')
+			return redirect(url_for('root'))
+
 
 @app.route('/policies/termini-di-servizio2023')
 def tds():

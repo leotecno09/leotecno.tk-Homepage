@@ -95,6 +95,8 @@
                             <hr style="color: white;">
                             <a href="/account/connected-sites" class="custom-a" id="friendsLink">Siti collegati</a>
                             <hr style="color: white;">
+                            <a href="/account/logout" class="custom-a">Logout</a>
+                            <hr style="color: white;">
                         </div>
                     </div>
                 </div>
@@ -112,8 +114,11 @@
                                         <hr style="width: 400px;">
                                         <p style="font-weight: bold; color: rgb(70, 70, 70);">VERIFICA IN DUE PASSAGGI</p>
                                         <p style="color: rgb(95, 95, 95);">Aggiungi un livello di sicurezza al tuo account,<br>confermando tramite e-mail ogni volta che<br>stai tentando di effettuare l'accesso al tuo account.</p>
-                                        <button class="btn btn-primary" style="background-color: rgb(77, 0, 128); border-color: rgb(77, 0, 128);" data-toggle="modal" data-target="#enable2FAModal" disabled>Attiva verifica in due passaggi</button>
-                                        <p style="color: red;">ATTENZIONE: Questa funzione non è stata ancora implementata. <a href="https://github.com/leotecno09/leotecno.tk-Homepage/issues/1">Clicca qui</a> per ulteriori informazioni</p>
+                                        {% if two_steps %}
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#disable2FAModal">Disattiva verifica in due passaggi</button>                   
+                                        {% else %}
+                                            <button class="btn btn-primary" style="background-color: rgb(77, 0, 128); border-color: rgb(77, 0, 128);" data-toggle="modal" data-target="#enable2FAModal">Attiva verifica in due passaggi</button>
+                                        {% endif %}
 
                                         <!--MODALS-->
                                         <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModal" aria-hidden="true">
@@ -161,6 +166,29 @@
                                                         <br>
                                                         <div class="d-flex justify-content-end">
                                                             <button type="submit" class="btn btn-primary ml-auto">Conferma e attiva</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade" id="disable2FAModal" tabindex="-1" role="dialog" aria-labelledby="disable2FAModal" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Disattiva la verifica in due passaggi</h5>
+                                                <span type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    &times;
+                                                </span>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="/account/actions/disable2FA" method="POST">
+                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
+                                                        <input type="password" id="password" name="password" class="form-control form-control-m">
+                                                        <br>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button type="submit" class="btn btn-danger ml-auto">Conferma e disattiva</button>
                                                         </div>
                                                     </form>
                                                 </div>
