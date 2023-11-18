@@ -7,5 +7,7 @@ IMPORTANT THINGS TO DO:
 - [ ] FIX MESSAGES CARDS IN /updates PAGE
 - [x] FINISH 2FA AUTHENTICATION.
 - [x] CONTINUE WITH ACCOUNT SETTINGS THINGS...
+- [ ] FINISH LOGOS
+- [ ] IMPROVE GRAPHIC AND SECURITY
 
 https://stackoverflow.com/questions/19372551/single-sign-on-with-oauth2-or-shared-session
