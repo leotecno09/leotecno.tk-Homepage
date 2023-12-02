@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Flash Popup con AJAX</title>
+    <!-- Includi Bootstrap per migliorare l'aspetto del popup -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- Modal Bootstrap per il popup -->
+<div id="popupModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Popup Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="popupContent">Contenuto del popup</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Includi jQuery e Bootstrap JavaScript -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Script JavaScript personalizzato per gestire la chiamata AJAX -->
+<script>
+  // Attiva la chiamata AJAX al caricamento della pagina
+  $(document).ready(function() {
+    $.ajax({
+      url: '/test',
+      type: 'POST',
+      success: function(response) {
+        // Aggiorna il contenuto del popup con il messaggio dal server
+        $('#popupContent').text(response.message);
+        // Mostra il popup
+        $('#popupModal').modal('show');
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -62,7 +62,6 @@
                 {% endif %}
             </div>
         </nav>
-
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -111,12 +110,19 @@
                                     <div class="card-body">
                                         <p style="font-weight: bold; color: rgb(70, 70, 70);">PASSWORD</p>
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">Modifica la password</button>
+                                        {% if last_password_change %}
+                                            <br>
+                                            <br>
+                                            <p>Ultima modifica: {{last_password_change}}</p>
+                                        {% endif %}
                                         <hr style="width: 400px;">
-                                        <p style="font-weight: bold; color: rgb(70, 70, 70);">VERIFICA IN DUE PASSAGGI</p>
-                                        <p style="color: rgb(95, 95, 95);">Aggiungi un livello di sicurezza al tuo account,<br>confermando tramite e-mail ogni volta che<br>stai tentando di effettuare l'accesso al tuo account.</p>
                                         {% if two_steps %}
+                                            <p style="font-weight: bold; color: rgb(70, 70, 70);">VERIFICA IN DUE PASSAGGI (attiva)</p>
+                                            <p style="color: rgb(95, 95, 95);">Aggiungi un livello di sicurezza al tuo account,<br>confermando tramite e-mail ogni volta che<br>stai tentando di effettuare l'accesso al tuo account.</p>
                                             <button class="btn btn-danger" data-toggle="modal" data-target="#disable2FAModal">Disattiva verifica in due passaggi</button>                   
                                         {% else %}
+                                            <p style="font-weight: bold; color: rgb(70, 70, 70);">VERIFICA IN DUE PASSAGGI</p>
+                                            <p style="color: rgb(95, 95, 95);">Aggiungi un livello di sicurezza al tuo account,<br>confermando tramite e-mail ogni volta che<br>stai tentando di effettuare l'accesso al tuo account.</p>
                                             <button class="btn btn-primary" style="background-color: rgb(77, 0, 128); border-color: rgb(77, 0, 128);" data-toggle="modal" data-target="#enable2FAModal">Attiva verifica in due passaggi</button>
                                         {% endif %}
 

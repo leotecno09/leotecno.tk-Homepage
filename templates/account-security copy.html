@@ -61,7 +61,26 @@
                     <a class="btn btn-primary ms-auto" href="/account/login" style="margin-right: 10px;">Accedi</a>
                 {% endif %}
             </div>
-        </nav>   
+        </nav>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <br>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">           
+                            <strong>Attenzione!</strong> {{ message }}
+                            <span aria-hidden="true" class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% else %}
+                        <br>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Ben fatto!</strong> {{ message }}
+                            <span aria-hidden="true" class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </head>
     <body>
         <div class="d-flex">
@@ -69,9 +88,9 @@
                 <div class="col">
                     <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 70px; margin-left: 10px; width: 300px; height: 850px;">
                         <div class="card-body">
-                            <a href="/account/info" class="custom-a text-white" id="accountLink">Su di me</a>
+                            <a href="/account/info" class="custom-a" id="accountLink">Su di me</a>
                             <hr style="color: white;">
-                            <a href="/account/security" class="custom-a" id="securityLink">Privacy e Sicurezza</a>
+                            <a href="/account/security" class="custom-a text-white" id="securityLink">Privacy e Sicurezza</a>
                             <hr style="color: white;">
                             <a href="/account/connected-sites" class="custom-a" id="friendsLink">Siti collegati</a>
                             <hr style="color: white;">
@@ -83,49 +102,43 @@
                 <div class="col">
                     <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 70px; width: 1569px; height: 850px;">
                         <div class="card-body">
-                            <h4 class="text-center">Info su di me</h4>
+                            <h4 class="text-center">Privacy e sicurezza</h4>
                             <hr class="mx-auto" style="width: 600px;">
                             <br>
                             <div class="d-flex justify-content-center">
                                 <div class="card" style="background:rgba(255, 255, 255, 0.466); border: none; width: 800px; height: 400px;">
                                     <div class="card-body">
-                                        <p style="color: rgb(70, 70, 70); font-weight: bold;">USERNAME</p>
-                                        <div class="d-flex align-items-center">
-                                            <p>{{current_user.username}}</p>
-                                            <button style="background: none; border: none; margin-bottom: 15px; margin-left: 10px;" type="button" data-toggle="modal" data-target="#changeUsernameModal"><ion-icon name="create-outline"></ion-icon></button>
-                                        </div>
+                                        <p style="font-weight: bold; color: rgb(70, 70, 70);">PASSWORD</p>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">Modifica la password</button>
                                         <hr style="width: 400px;">
-                                        <p style="color: rgb(70, 70, 70); font-weight: bold;">E-MAIL</p>
-                                        <div class="d-flex align-items-center">
-                                            <p>{{current_user.email}}</p>
-                                            <button style="background: none; border: none; margin-bottom: 15px; margin-left: 10px;" type="button" data-toggle="modal" data-target="#changeEmailModal"><ion-icon name="create-outline"></ion-icon></button>
-                                        </div>
-                                        <hr style="width: 400px;">
-                                        <p style="color: rgb(70, 70, 70); font-weight: bold;">ID</p>
-                                        <p>{{current_user.id}}</p>
-                                        <hr style="width: 400px;">
-                                        <p style="color: red;">
-                                            Attenzione:<br>
-                                            l'ID è un dato univoco per ciascun utente, non condividerlo con nessuno!
-                                        </p>
+                                        <p style="font-weight: bold; color: rgb(70, 70, 70);">VERIFICA IN DUE PASSAGGI</p>
+                                        <p style="color: rgb(95, 95, 95);">Aggiungi un livello di sicurezza al tuo account,<br>confermando tramite e-mail ogni volta che<br>stai tentando di effettuare l'accesso al tuo account.</p>
+                                        {% if two_steps %}
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#disable2FAModal">Disattiva verifica in due passaggi</button>                   
+                                        {% else %}
+                                            <button class="btn btn-primary" style="background-color: rgb(77, 0, 128); border-color: rgb(77, 0, 128);" data-toggle="modal" data-target="#enable2FAModal">Attiva verifica in due passaggi</button>
+                                        {% endif %}
 
                                         <!--MODALS-->
-                                        <div class="modal fade" id="changeUsernameModal" tabindex="-1" role="dialog" aria-labelledby="changeUsernameModal" aria-hidden="true">
+                                        <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModal" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">Modifica il nome utente</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Modifica la password</h5>
                                                 <span type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     &times;
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/changeUsername" method="POST">
+                                                    <form action="/account/actions/changePassword" method="POST">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
                                                         <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-m">
                                                         <br>
-                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">NUOVO USERNAME</p>
-                                                        <input type="text" id="newUsername" name="newUsername" class="form-control form-control-m">
+                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">NUOVA PASSWORD</p>
+                                                        <input type="password" id="newPassword" name="newPassword" class="form-control form-control-m">
+                                                        <br>
+                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">CONFERMA NUOVA PASSWORD</p>
+                                                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control form-control-m">
                                                         <br>
                                                         <div class="d-flex justify-content-end">
                                                             <button type="submit" class="btn btn-primary ml-auto">Conferma</button>
@@ -136,25 +149,45 @@
                                             </div>
                                         </div>
 
-                                        <div class="modal fade" id="changeEmailModal" tabindex="-1" role="dialog" aria-labelledby="changeEmailModal" aria-hidden="true">
+                                        <div class="modal fade" id="enable2FAModal" tabindex="-1" role="dialog" aria-labelledby="enable2FAModal" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">Modifica l'email</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Attiva la verifica in due passaggi</h5>
                                                 <span type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     &times;
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/changeEmail" method="POST">
+                                                    <form action="/account/actions/enable2FA" method="POST">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
-                                                        <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-m">
-                                                        <br>
-                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">NUOVA EMAIL</p>
-                                                        <input type="email" id="newEmail" name="newEmail" class="form-control form-control-m">
+                                                        <input type="password" id="password" name="password" class="form-control form-control-m">
                                                         <br>
                                                         <div class="d-flex justify-content-end">
-                                                            <button type="submit" class="btn btn-primary ml-auto">Conferma</button>
+                                                            <button type="submit" class="btn btn-primary ml-auto">Conferma e attiva</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade" id="disable2FAModal" tabindex="-1" role="dialog" aria-labelledby="disable2FAModal" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Disattiva la verifica in due passaggi</h5>
+                                                <span type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    &times;
+                                                </span>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="/account/actions/disable2FA" method="POST">
+                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
+                                                        <input type="password" id="password" name="password" class="form-control form-control-m">
+                                                        <br>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button type="submit" class="btn btn-danger ml-auto">Conferma e disattiva</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -169,7 +202,7 @@
                     </div>
                 </div>
             </div>
-        </div>      
+        </div>
     </body>
 
     <!--SCRIPTS-->

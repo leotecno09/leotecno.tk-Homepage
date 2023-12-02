@@ -1,9 +1,9 @@
 # IMPORTAZIONE MODULI
-from flask import Flask, render_template, flash, url_for, request, redirect
+from flask import Flask, render_template, flash, url_for, request, redirect, jsonify
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, date
 from functools import wraps
 import psycopg2																	
 from psycopg2 import Error
@@ -11,7 +11,7 @@ import os
 import random
 import flask_login
 import secrets
-import pyotp
+#import pyotp
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 # FLASK THINGS
@@ -27,7 +27,7 @@ app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
 app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USERNAME'] = 'xxx'
-app.config['MAIL_PASSWORD'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+app.config['MAIL_PASSWORD'] = 'xxxxxxxxxxxxxxxxxxxxxxxxx'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -115,8 +115,8 @@ def register():
 
 		# LOGO CHOOSING (fatto da culo)
 		letter = username[0]
-		letter.upper()
-		#print(letter)
+		letter = letter.upper()
+		print(letter)
 		logoDir = "Q:/Workstation/leotecnotk-new-homepage/static/images/accounts/letters"
 		dirProvv = '/static/images/accounts/letters'
 		
@@ -154,7 +154,13 @@ def register():
 					cur.execute('INSERT INTO accounts (username, email, password, id, created_on, logo)' 'VALUES (%s, %s, %s, %s, %s, %s)', (format(username), format(email), format(hashed_password), int(userID), format(creation_date), format(logoPath)))
 					conn.commit()
 
-					return '[POST] OK'
+					user = User(id=userID)
+					user.username = username
+					user.email = email
+					user.logo = logoPath
+					login_user(user, remember=True)
+					flash('Account creato con successo')
+					return redirect(url_for('accountSettings'))
 
 				except Error as e:
 					return redirect(url_for('error'))
@@ -218,6 +224,7 @@ def login():
 						user.email = email
 						user.logo = logoPath
 						login_user(user, remember=True)
+						flash("Autenticato con successo.")
 						return redirect(url_for('root'))
 				
 				else:
@@ -269,6 +276,7 @@ def twoStepVerification():
 			token = 0
 			code = 0
 
+			flash("Autenticato con successo.")
 			return redirect(url_for('root'))
 
 		else:
@@ -293,7 +301,7 @@ def logout():
 
 @app.route('/account/settings')
 @login_required
-def accountSetings():
+def accountSettings():
 	return render_template('account-settings.html')
 
 @app.route('/account/info')
@@ -310,7 +318,9 @@ def accountSecurity():
 		result = cur.fetchone()
 
 		two_steps = result[8]
-		return render_template('account-security.html', two_steps=two_steps)
+		last_password_change = result[9]
+		#flash("this is a simulation. this is not real. this is a test.")
+		return render_template('account-security.html', two_steps=two_steps, last_password_change=last_password_change)
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))		
@@ -339,7 +349,12 @@ def changePassword():
 			if newPassword == confirmNewPassword:
 				new_hashed_password = generate_password_hash(newPassword, method='scrypt')
 
-				cur.execute('UPDATE accounts SET password = %s WHERE id = %s', (format(new_hashed_password), int(id)))
+				now = datetime.now()
+				formatted_datetime = now.strftime("%d/%m/%Y %H:%M:%S")
+
+				creation_date = formatted_datetime
+
+				cur.execute('UPDATE accounts SET password = %s, last_password_change = %s WHERE id = %s', (format(new_hashed_password), format(creation_date), int(id)))
 				conn.commit()
 
 				flash('Password aggiornata con successo.')
@@ -376,7 +391,7 @@ def changeUsername():
 				cur.execute('UPDATE accounts SET username = %s WHERE id = %s', (format(newUsername), int(id)))
 				conn.commit()
 
-				flash('Username aggiornato con successo.')
+				#flash('Username aggiornato con successo.')
 				return redirect(url_for('accountInfo'))
 			
 			except Error as e:
@@ -448,7 +463,7 @@ def enable2FA():
 				return redirect(url_for('error', e=e))
 			
 		else:
-			flash('Password errata.', cateogry='error')
+			flash('Password errata.', category='error')
 			return redirect(url_for('accountSecurity'))
 	
 	except Error as e:
@@ -478,7 +493,7 @@ def disable2FA():
 				return redirect(url_for('error', e=e))
 
 		else:		
-			flash('Password errata.', cateogry='error')
+			flash('Password errata.', category='error')
 			return redirect(url_for('accountSecurity'))
 	
 	except Error as e:
@@ -594,6 +609,17 @@ def sendmail():
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))
+	
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+	if request.method == 'POST':
+		flash('DASDADASDASDADsadasassada')
+		return redirect(url_for('test'))
+
+	else:
+		flash('DASDADASDASDADsadasassada')
+		return jsonify({'message': 'Popup mostrato con successo'})
+
 	
 
 if __name__ == '__main__':

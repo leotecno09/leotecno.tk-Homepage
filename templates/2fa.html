@@ -34,7 +34,7 @@
         <div class="mask d-flex align-items-center h-100 gradient-custom-3">
           <div class="container h-100">
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
+            <!--{% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
                         {% if category == 'error' %}
@@ -52,7 +52,7 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
-            {% endwith %}
+            {% endwith %}!-->
 
             <div class="row d-flex justify-content-center align-items-center h-100">
               <div class="col-12 col-md-9 col-lg-7 col-xl-6">
@@ -60,23 +60,66 @@
                 <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 100px;">
                   <div class="card-body p-5">
                     <h2 class="text-uppercase text-center mb-5">Verifica in due passaggi</h2>
-                    <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
-      
-                    <form action="/account/login/twostepsverification" method="POST">
-
-                      <input type="hidden" name="token" value="{{token}}">
-                      <input type="hidden" name="user_id" value="{{user_id}}">
-      
-                      <div class="form-outline mb-4">
-                        <input type="text" id="code" name="code" class="form-control form-control-lg" placeholder="Inserisci il codice" />
-                      </div>
-
-                      <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Procedi</button>
-                      </div>
-      
-                    </form>
-      
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          {% if category == 'error' %}
+                            <p style="color: red;" class="text-center fw-bold">{{ message }}</p>
+                            <br>
+                            <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
+          
+                            <form action="/account/login/twostepsverification" method="POST">
+        
+                              <input type="hidden" name="token" value="{{token}}">
+                              <input type="hidden" name="user_id" value="{{user_id}}">
+              
+                              <div class="form-outline mb-4">
+                                <input type="text" id="code" name="code" style="border-color: red;" class="form-control form-control-lg" placeholder="Inserisci il codice" />
+                              </div>
+        
+                              <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary">Procedi</button>
+                              </div>
+              
+                            </form>
+                          {% else %}
+                            <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
+          
+                            <form action="/account/login/twostepsverification" method="POST">
+        
+                              <input type="hidden" name="token" value="{{token}}">
+                              <input type="hidden" name="user_id" value="{{user_id}}">
+              
+                              <div class="form-outline mb-4">
+                                <input type="text" id="code" name="code" class="form-control form-control-lg" placeholder="Inserisci il codice" />
+                              </div>
+        
+                              <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary">Procedi</button>
+                              </div>
+              
+                            </form>
+                          {% endif %}
+                        {% endfor %}
+                      {% else %}
+                        <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
+        
+                        <form action="/account/login/twostepsverification" method="POST">
+    
+                          <input type="hidden" name="token" value="{{token}}">
+                          <input type="hidden" name="user_id" value="{{user_id}}">
+          
+                          <div class="form-outline mb-4">
+                            <input type="text" id="code" name="code" class="form-control form-control-lg" placeholder="Inserisci il codice" />
+                          </div>
+    
+                          <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Procedi</button>
+                          </div>
+          
+                        </form>
+                      {% endif %}
+                    {% endwith %}      
                   </div>
                 </div>
               </div>
