@@ -75,7 +75,7 @@
                             <hr style="color: white;">
                             <a href="/account/connected-sites" class="custom-a" id="friendsLink">Siti collegati</a>
                             <hr style="color: white;">
-                            <a href="/account/danger-zone" class="custom-a" id="friendsLink">Danger zone</a>
+                            <a href="/account/danger-zone" class="custom-a text-white" id="friendsLink">Danger zone</a>
                             <hr style="color: white;">
                             <a href="/account/logout" class="custom-a">Logout</a>
                             <hr style="color: white;">
@@ -84,54 +84,64 @@
                 </div>
                 <div class="col">
                     <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 70px; width: 1569px; height: 850px;">
-                        <div class="card-body text-center">
-                            <br>
-                            <img class="rounded-circle shadow-4-strong" height="100" weight="130" alt="usericon" src="{{current_user.logo}}" />
-                            <br>
-                            <br>
-                            <h3>Ciao, {{current_user.username}}.</h3>
+                        <div class="card-body">
+                            <h4 class="text-center">Danger zone</h4>
                             <hr class="mx-auto" style="width: 600px;">
                             <br>
-                            <h5>...cerchi qualcosa?</h5>
-                            <br>
-                            <div class="row justify-content-center">
-                                <div class="col-3 mb-3" style="margin-left: 70px;">
-                                    <div class="card" style="width: 18rem; background: rgba(255, 255, 255, 0.411); border: none;">
-                                        <div class="card-body">
-                                            <ion-icon name="person-outline" style="font-size: 50px; color: rgb(23, 96, 255);"></ion-icon>
-                                            <br>
-                                            <h5>Info su di me</h5>                                                                                          <!--UN PO' DECENTRATE-->
-                                            <p>Modifica e controlla i tuoi dati personali</p>
-                                        </div>
-                                        <ul class="list-group list-group-flush" style="background: rgba(255, 255, 255, 0.411);">
-                                            <a class="list-group-item" style="font-size: 15px; background-color: blue; color: white;" href="/account/info">Info su di me ></a>
-                                        </ul>
+                            <div class="d-flex justify-content-center">
+                                <div class="card" style="background:rgba(255, 255, 255, 0.466); border: none; width: 800px; height: 400px;">
+                                    <!--div class="card-header">
+                                        Siti web collegati all'account leotecno.tk
                                     </div>
-                                </div>
-                                <div class="col-3 mb-3">
-                                    <div class="card" style="width: 18rem; background: rgba(255, 255, 255, 0.411); border: none;">
-                                        <div class="card-body">
-                                            <ion-icon name="lock-closed-outline" style="font-size: 50px; border: none; color: rgb(23, 96, 255);"></ion-icon>
-                                            <br>
-                                            <h5>Sicurezza dell'account</h5>
-                                            <p>Gestisci la sicurezza del tuo account: modifica la password e aggiungi metodi di sicurezza per accedere</p>
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-2">
+                                                <h4>FilEZ</h4>
+                                            </div>
+                                            <div class="col-6">
+                                                <a href="https://filez.leotecno.tk">(https://filez.leotecno.tk)</a>
+                                            </div>
+                                            <div class="col-2 d-flex align-items-center justify-content-end">
+                                                <a href="#" style="color: red; text-decoration: none;">
+                                                    <ion-icon name="close-outline" style="margin-top: 2px;"></ion-icon>Rimuovi
+                                                </a>
+                                            </div>
+                                            <div class="col-2 d-flex align-items-center justify-content-end">
+                                                <a href="#" style="color: blue; text-decoration: none;">
+                                                    <ion-icon name="help-circle-outline" style="margin-top: 2px;"></ion-icon>Informazioni
+                                                </a>
+                                            </div>
+                                            </div>
+                                        </div> 
+                                    </div!-->
+                                    <div class="card-body">
+                                        <p style="color: rgb(70, 70, 70); font-weight: bold;">ELIMINA ACCOUNT</p>
+                                        <p style="color: red;"><span class="fw-bold">Questa azione è irreversibile:</span> una volta eseguita questa operazione perderete l'accesso a tutti i servizi leotecno.tk e il vostro account non potrà più essere recuperato.</p>
+                                        <button class="btn btn-danger" data-toggle="modal" data-target="#delAccountModal">Elimina definitivamente l'account</button>
+
+                                        <!--MODALS-->
+                                        <div class="modal fade" id="delAccountModal" tabindex="-1" role="dialog" aria-labelledby="delAccountModal" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Elimina l'account</h5>
+                                                <span type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    &times;
+                                                </span>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="/account/actions/deleteAccount" method="POST">
+                                                        <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
+                                                        <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-m">
+                                                        <br>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button type="submit" class="btn btn-danger ml-auto">Conferma e distruggi</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            </div>
                                         </div>
-                                        <ul class="list-group list-group-flush">
-                                            <a class="list-group-item" style="font-size: 15px; background-color: green; color: white;" href="/account/security">Privacy e Sicurezza ></a>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-3 mb-3">
-                                    <div class="card" style="width: 18rem; background: rgba(255, 255, 255, 0.411); border: none;">
-                                        <div class="card-body">
-                                            <ion-icon name="attach-outline" style="font-size: 50px; border: none; color: rgb(23, 96, 255);"></ion-icon>
-                                            <br>
-                                            <h5>Siti collegati</h5>
-                                            <p>Controlla e gestisci i siti a cui hai effettuato l'accesso con l'account leotecno.tk</p>
-                                        </div>
-                                        <ul class="list-group list-group-flush">
-                                            <a class="list-group-item" style="font-size: 15px; background-color: rgb(153, 5, 5); color: white;" href="/account/atteched-sites">Siti collegati ></a>
-                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -149,5 +159,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="/static/scripts/JS/random_site.js"></script>
 </html>

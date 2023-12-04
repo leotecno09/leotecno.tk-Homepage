@@ -55,7 +55,7 @@
                 </ul>
                 {% if current_user.is_authenticated %}
                     <a href="/account/settings" class="ms-auto" style="margin-right: 10px;">
-                        <img class="rounded-circle shadow-4-strong" height="40" weight="70" alt="usericon" src="/static/images/accounts/letters/L.png" />
+                        <img class="rounded-circle shadow-4-strong" height="40" weight="70" alt="usericon" src="{{current_user.logo}}" />
                     </a>
                 {% else %}
                     <a class="btn btn-primary ms-auto" href="/account/login" style="margin-right: 10px;">Accedi</a>
@@ -74,6 +74,8 @@
                             <a href="/account/security" class="custom-a" id="securityLink">Privacy e Sicurezza</a>
                             <hr style="color: white;">
                             <a href="/account/connected-sites" class="custom-a text-white" id="friendsLink">Siti collegati</a>
+                            <hr style="color: white;">
+                            <a href="/account/danger-zone" class="custom-a" id="friendsLink">Danger zone</a>
                             <hr style="color: white;">
                             <a href="/account/logout" class="custom-a">Logout</a>
                             <hr style="color: white;">

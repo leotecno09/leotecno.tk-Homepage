@@ -76,6 +76,21 @@ def checkUserRole():
 	
 	return role
 
+def chooseLogo(username):
+		letter = username[0]
+		letter = letter.upper()
+		print(letter)
+		logoDir = "Q:/Workstation/leotecnotk-new-homepage/static/images/accounts/letters"
+		dirProvv = '/static/images/accounts/letters'
+				
+		logos = os.listdir(logoDir)
+
+		logo = [file for file in logos if file.startswith(letter)]
+		fileName = logo[0]
+		logoPath = f"{dirProvv}/{fileName}"
+		
+		return logoPath
+
 # ERROR HANDLER
 @app.errorhandler(404)
 def page_not_found(e):
@@ -106,19 +121,7 @@ def register():
 
 		userID = ''.join([str(random.randint(0, 9)) for _ in range(9)])
 
-		# LOGO CHOOSING (fatto da culo)
-		letter = username[0]
-		letter = letter.upper()
-		print(letter)
-		logoDir = "Q:/Workstation/leotecnotk-new-homepage/static/images/accounts/letters"
-		dirProvv = '/static/images/accounts/letters'
-		
-		logos = os.listdir(logoDir)
-
-		logo = [file for file in logos if file.startswith(letter)]
-		fileName = logo[0]
-		logoPath = f"{dirProvv}/{fileName}"
-		#print(logoPath)
+		logoPath = chooseLogo(username)
 
 		try:
 			cur.execute('SELECT * FROM accounts WHERE email = %s', (email,))
@@ -323,6 +326,12 @@ def accountSecurity():
 def accountSites():
 	return render_template('account-sites.html')
 
+	
+@app.route('/account/danger-zone')
+@login_required
+def accountDanger():
+	return render_template('account-danger.html')
+
 @app.route('/account/actions/changePassword', methods=['POST'])
 def changePassword():
 	currentPassword = request.form['currentPassword']
@@ -373,6 +382,8 @@ def changeUsername():
 	id = current_user.id
 
 	try:
+		logoPath = chooseLogo(newUsername)
+
 		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
 		result = cur.fetchone()
 
@@ -381,7 +392,7 @@ def changeUsername():
 		if check_password_hash(stored_password, currentPassword):
 			
 			try:
-				cur.execute('UPDATE accounts SET username = %s WHERE id = %s', (format(newUsername), int(id)))
+				cur.execute('UPDATE accounts SET username = %s, logo = %s WHERE id = %s', (format(newUsername), format(logoPath), int(id)))
 				conn.commit()
 
 				#flash('Username aggiornato con successo.')
@@ -491,7 +502,22 @@ def disable2FA():
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))
+	
+#@app.route('/account/actions/deleteAccount', method=['POST'])
+#def delAccount():
+#	password = request.form['currentPassword']
+#	id = current_user.id
 
+	#try:
+	#	cur.excute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+	#	result = cur.fetchone()
+	#
+	#	stored_password = result[2]
+	#
+	#	if check_password_hash(stored_password, password):
+	#		
+	#		try:
+	#			cur.execute('DELETE')
 
 
 
@@ -605,13 +631,7 @@ def sendmail():
 	
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-	if request.method == 'POST':
-		flash('DASDADASDASDADsadasassada')
-		return redirect(url_for('test'))
-
-	else:
-		flash('DASDADASDASDADsadasassada')
-		return jsonify({'message': 'Popup mostrato con successo'})
+	return render_template('test.html')
 
 	
 

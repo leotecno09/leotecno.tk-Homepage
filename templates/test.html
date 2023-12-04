@@ -2,54 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Flash Popup con AJAX</title>
-    <!-- Includi Bootstrap per migliorare l'aspetto del popup -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000000;
+            padding: 50px;
+        }
+
+        #hiddenText {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #countdown {
+            display: none;
+            opacity: 0;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            hiddenText.style.display = "block";
+            setTimeout(function () {
+                var hiddenText = document.getElementById("hiddenText");
+                hiddenText.style.display = "block";
+                hiddenText.style.opacity = "1";
+            }, 3000);
+
+            setTimeout(function () {
+              var countdown = document.getElementById("countdown");
+              countdown.style.display = "block";
+              console.log('EXEC');
+              // countdownStart();
+            }, 6000);
+        });
+    </script>
+    <title>it's gone</title>
 </head>
 <body>
-
-<!-- Modal Bootstrap per il popup -->
-<div id="popupModal" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Popup Title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p id="popupContent">Contenuto del popup</p>
-      </div>
+    <h1 style="color: white;">We're ready sir...</h1>
+    <div id="hiddenText">
+        <h2 style="color: rgb(255, 255, 255);">your account will be blown up in:</p>
     </div>
-  </div>
-</div>
-
-<!-- Includi jQuery e Bootstrap JavaScript -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-<!-- Script JavaScript personalizzato per gestire la chiamata AJAX -->
-<script>
-  // Attiva la chiamata AJAX al caricamento della pagina
-  $(document).ready(function() {
-    $.ajax({
-      url: '/test',
-      type: 'POST',
-      success: function(response) {
-        // Aggiorna il contenuto del popup con il messaggio dal server
-        $('#popupContent').text(response.message);
-        // Mostra il popup
-        $('#popupModal').modal('show');
-      },
-      error: function(error) {
-        console.log(error);
-      }
-    });
-  });
-</script>
-
+    <div id="countdown">
+        <h2 style="color: white;">3</h1>
+    </div>
 </body>
 </html>
