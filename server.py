@@ -46,11 +46,11 @@ def load_user(id):
 	try:
 		cur.execute('SELECT * FROM accounts WHERE id = %s', (id,))
 		result = cur.fetchone()
-
+	
 		username = result[0]
 		email = result[1]
 		logoPath = result[7]
-
+	
 		user = User(id)
 		user.username = username
 		user.email = email
@@ -503,21 +503,45 @@ def disable2FA():
 	except Error as e:
 		return redirect(url_for('error', e=e))
 	
-#@app.route('/account/actions/deleteAccount', method=['POST'])
-#def delAccount():
-#	password = request.form['currentPassword']
-#	id = current_user.id
+@app.route('/account/actions/deleteAccount', methods=['POST'])
+def delAccount():
+	password = request.form['currentPassword']
+	id = current_user.id
 
-	#try:
-	#	cur.excute('SELECT * FROM accounts WHERE id = %s', (int(id),))
-	#	result = cur.fetchone()
-	#
-	#	stored_password = result[2]
-	#
-	#	if check_password_hash(stored_password, password):
-	#		
-	#		try:
-	#			cur.execute('DELETE')
+	try:
+		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
+		result = cur.fetchone()
+	
+		stored_password = result[2]
+	
+		if check_password_hash(stored_password, password):
+			
+			return render_template('test.html', redirect="server", id=current_user.id)
+		
+		else:
+			return "password errata"
+		
+	except Error as e:
+		return redirect(url_for('error', e=e))
+	
+@app.route('/account/actions/deleteAccount1', methods=['POST'])
+def effettivoDelAccount():
+	whoRedirected = request.form['redirect']
+	id = request.form['id']
+
+	if whoRedirected == "server":
+
+		try:
+			logout_user()
+			cur.execute('DELETE FROM accounts WHERE id = %s', (int(id),))
+			conn.commit()
+
+			return redirect(url_for('root'))
+
+		except Error as e:
+			return redirect(url_for('error', e=e))	
+	else:
+		return "coglione"
 
 
 

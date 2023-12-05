@@ -21,9 +21,37 @@
         #countdown {
             display: none;
             opacity: 0;
+            transition: opacity 1s ease-in-out;
+            font-size: 100px;
+            color: white;
         }
     </style>
     <script>
+        function countdownStart() {
+            countdownElement = document.getElementById("countdown");
+            var count = 3;
+            
+            for (var i = count; i >= 0; i--) {
+                (function (index) {
+                    setTimeout(function () {
+                        countdownElement.textContent = index;
+
+                        if (index === 0) {
+                            setTimeout(function () {
+                                // window.location.href = '/account/actions/deleteAccount1';
+                                document.getElementById('fakeForm').submit();
+                            }, 1000);
+                        }
+                    }, (count - index) * 1000);
+                })(i);
+            }
+            
+            // countdownElement.textContent = count;
+            // console.log(countdownElement.textContent);
+
+            
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             hiddenText.style.display = "block";
             setTimeout(function () {
@@ -33,11 +61,12 @@
             }, 3000);
 
             setTimeout(function () {
-              var countdown = document.getElementById("countdown");
-              countdown.style.display = "block";
-              console.log('EXEC');
-              // countdownStart();
-            }, 6000);
+                var countdown = document.getElementById("countdown");
+                countdown.style.display = "block";
+                countdown.style.opacity = "1";
+                console.log('EXEC');
+                countdownStart();
+            }, 5000);
         });
     </script>
     <title>it's gone</title>
@@ -48,7 +77,11 @@
         <h2 style="color: rgb(255, 255, 255);">your account will be blown up in:</p>
     </div>
     <div id="countdown">
-        <h2 style="color: white;">3</h1>
+        <h1></h1>
     </div>
+    <form id="fakeForm" action="/account/actions/deleteAccount1" method="POST">
+        <input type="hidden" name="redirect" value="{{redirect}}">
+        <input type="hidden" name="id" value="{{id}}">
+    </form>
 </body>
 </html>
