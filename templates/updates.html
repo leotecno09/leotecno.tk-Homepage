@@ -45,7 +45,7 @@
                 </ul>
                 {% if current_user.is_authenticated %}
                     <a href="/account/settings" class="ms-auto" style="margin-right: 10px;">
-                        <img class="rounded-circle shadow-4-strong" height="40" weight="70" alt="usericon" src="{{current_user.logo}}" />
+                        <img class="rounded-circle shadow-4-strong" height="40" width="40" alt="usericon" src="{{current_user.logo}}" />
                     </a>
                 {% else %}
                     <a class="btn btn-primary ms-auto" href="/account/login" style="margin-right: 10px;">Accedi</a>

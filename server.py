@@ -3,6 +3,7 @@ from flask import Flask, render_template, flash, url_for, request, redirect, jso
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime, date
 from functools import wraps
 import psycopg2																	
@@ -14,6 +15,10 @@ import secrets
 #import pyotp
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
+# VARIABLES
+LOGO_FOLDER = 'Q:/Workstation/leotecnotk-new-homepage/static/images/accounts/uploaded'
+ALLOWED_LOGO_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
 # FLASK THINGS
 app = Flask(__name__)
 Bootstrap(app)
@@ -22,6 +27,7 @@ Bootstrap(app)
 
 # FLASK CONFIGURATIONS
 app.config['SECRET_KEY'] = 'dasiugdjfr7h5g5'
+app.config['LOGO_FOLDER'] = LOGO_FOLDER
 
 #FLASK MAIL
 app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
@@ -90,6 +96,10 @@ def chooseLogo(username):
 		logoPath = f"{dirProvv}/{fileName}"
 		
 		return logoPath
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_LOGO_EXTENSIONS
 
 # ERROR HANDLER
 @app.errorhandler(404)
@@ -541,7 +551,37 @@ def effettivoDelAccount():
 		except Error as e:
 			return redirect(url_for('error', e=e))	
 	else:
-		return "coglione"
+		return "non va bene"
+
+@app.route('/account/actions/changeLogo', methods=['POST'])
+def changeLogo():
+	username = str(current_user.username)
+	id = current_user.id
+	
+	logo = request.files['logo']
+
+	if logo.filename == '':
+		flash('Seleziona un file.', category='error')
+		return redirect(url_for('accountSettings'))
+	
+	if logo and allowed_file(logo.filename):
+		filename = secure_filename(username + '.' + logo.filename.rsplit('.', 1)[1].lower())
+		logoPath = '/static/images/accounts/uploaded/' + filename
+		#print(logoPath)
+		logo.save(os.path.join(app.config['LOGO_FOLDER'], filename))
+
+		try:
+			cur.execute('UPDATE accounts SET logo = %s WHERE id = %s', (format(logoPath), int(id)))
+			conn.commit()
+
+		except Error as e:
+			return redirect(url_for('error', e=e))
+
+		return redirect(url_for('accountSettings'))
+	
+	else:
+		flash('Formato file non valido', category='error')
+		return redirect(url_for('accountSettings'))
 
 
 
