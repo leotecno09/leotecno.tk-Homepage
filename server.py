@@ -1,5 +1,5 @@
 # IMPORTAZIONE MODULI
-from flask import Flask, render_template, flash, url_for, request, redirect, jsonify
+from flask import Flask, render_template, flash, url_for, request, redirect, jsonify, Response
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -109,7 +109,7 @@ def page_not_found(e):
 # ROUTES
 @app.route('/')
 def root():
-	#flash('Benvenuto sul nuovo leotecno.tk!')
+	flash('Benvenuto sul nuovo leotecno.tk!')
 	return render_template('index.html')
 
 @app.route('/account/register', methods=['GET', 'POST'])
@@ -169,10 +169,10 @@ def register():
 					return redirect(url_for('accountSettings'))
 
 				except Error as e:
-					return redirect(url_for('error'))
+					return redirect(url_for('error', e=e))
 				
 		except Error as e:
-			return redirect(url_for('error'))			
+			return redirect(url_for('error', e=e))			
 	
 	else:
 		return render_template('register.html')
@@ -243,7 +243,7 @@ def login():
 				return redirect(url_for('login'))
 
 		except Error as e:
-			return redirect(url_for('error'))
+			return redirect(url_for('error', e=e))
 	else:	
 		return render_template('login.html')
 	
@@ -369,16 +369,20 @@ def changePassword():
 				cur.execute('UPDATE accounts SET password = %s, last_password_change = %s WHERE id = %s', (format(new_hashed_password), format(creation_date), int(id)))
 				conn.commit()
 
-				flash('Password aggiornata con successo.')
-				return redirect(url_for('accountSecurity'))	
+				#flash('Password aggiornata con successo.')
+				result = "success"
+				return jsonify({"result": result})
 
 			else:
-				flash('Le due nuove password non corrispondono.', category='error')
-				return redirect(url_for('accountSecurity'))
+				#flash('Le due nuove password non corrispondono.', category='error')
+				result = "error"
+				popup_text = "Le due password non corrispondono."
+				return jsonify({"result": result, "popup_text": popup_text})
 
 		else:
-			flash('La password corrente è errata.', category='error')
-			return redirect(url_for('accountSecurity'))
+				result = "error"
+				popup_text = "La password corrente è errata."
+				return jsonify({"result": result, "popup_text": popup_text})
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))
@@ -470,15 +474,18 @@ def enable2FA():
 				cur.execute("UPDATE accounts SET two_steps = 'TRUE' WHERE id = %s", (int(id),))
 				conn.commit()
 
-				flash('Verifica in due passaggi attivata con successo.')
-				return redirect(url_for('accountSecurity'))
+				#flash('Verifica in due passaggi attivata con successo.')
+				risultato = "success"
+				return jsonify({"risultato": risultato})
 			
 			except Error as e:
 				return redirect(url_for('error', e=e))
 			
 		else:
-			flash('Password errata.', category='error')
-			return redirect(url_for('accountSecurity'))
+			#flash('Password errata.', category='error')
+			risultato = "error"
+			popup_text = "Password errata."
+			return jsonify({"risultato": risultato, "popup_text": popup_text})
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))
@@ -487,6 +494,8 @@ def enable2FA():
 def disable2FA():
 	password = request.form['password']
 	id = current_user.id
+
+	print(password)
 
 	try:
 		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
@@ -500,15 +509,18 @@ def disable2FA():
 				cur.execute("UPDATE accounts SET two_steps = '' WHERE id = %s", (int(id),))
 				conn.commit()
 
-				flash('Verifica in due passaggi disattivata con successo.')
-				return redirect(url_for('accountSecurity'))
+				#flash('Verifica in due passaggi disattivata con successo.')
+				result = "success"
+				return jsonify({"result": result})
 			
 			except Error as e:
 				return redirect(url_for('error', e=e))
 
 		else:		
-			flash('Password errata.', category='error')
-			return redirect(url_for('accountSecurity'))
+			#flash('Password errata.', category='error')
+			result = "error"
+			popup_text = "Password errata."
+			return jsonify({"result": result, "popup_text": popup_text})
 	
 	except Error as e:
 		return redirect(url_for('error', e=e))
@@ -526,7 +538,7 @@ def delAccount():
 	
 		if check_password_hash(stored_password, password):
 			
-			return render_template('test.html', redirect="server", id=current_user.id)
+			return render_template('blowing_up_account.html', redirect="server")
 		
 		else:
 			return "password errata"
@@ -537,7 +549,7 @@ def delAccount():
 @app.route('/account/actions/deleteAccount1', methods=['POST'])
 def effettivoDelAccount():
 	whoRedirected = request.form['redirect']
-	id = request.form['id']
+	id = current_user.id
 
 	if whoRedirected == "server":
 
@@ -695,7 +707,7 @@ def sendmail():
 	
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-	return render_template('test.html')
+	return 'Test page. Not in use.'
 
 	
 

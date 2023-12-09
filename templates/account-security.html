@@ -26,6 +26,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <nav class="navbar navbar-expand-lg navbar-dark navbar-shadow shadow-lg fixed-top">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -62,27 +63,76 @@
                 {% endif %}
             </div>
         </nav>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    {% if category == 'error' %}
-                        <br>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">           
-                            <strong>Attenzione!</strong> {{ message }}
-                            <span aria-hidden="true" class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <!--{% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'error' %}
+                    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background-color: rgb(114, 0, 0);">
+                                    <h5 class="modal-title" style="color: white;">Si è verificato un errore</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: none; background: none; color: white;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ message }}
+                                </div>
+                            </div>
                         </div>
-                    {% else %}
-                        <br>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <strong>Ben fatto!</strong> {{ message }}
-                            <span aria-hidden="true" class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('#errorModal').modal('show');
+                            console.log('CIAP')
+                        });           
+                    </script>
+                {% else %}
+                    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background-color: rgb(0, 114, 25);">
+                                    <h5 class="modal-title" style="color: white;">Ok!</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: none; background: none; color: white;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ message }}
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('#successModal').modal('show');
+                        });           
+                    </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}-->
     </head>
     <body>
+
+        <!--POPUPS-->
+        <!--div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: rgb(114, 0, 0);">
+                        <h5 class="modal-title" style="color: white;">Si è verificato un errore</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: none; background: none; color: white;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="popupText"></p>
+                    </div>
+                </div>
+            </div>
+        </div!-->
+
         <div class="d-flex">
             <div class="row">
                 <div class="col">
@@ -139,7 +189,7 @@
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/changePassword" method="POST">
+                                                    <form id="changePassword">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
                                                         <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-m">
                                                         <br>
@@ -150,7 +200,7 @@
                                                         <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control form-control-m">
                                                         <br>
                                                         <div class="d-flex justify-content-end">
-                                                            <button type="submit" class="btn btn-primary ml-auto">Conferma</button>
+                                                            <button type="button" id="submitChangePassword" class="btn btn-primary ml-auto">Conferma</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -168,12 +218,14 @@
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/enable2FA" method="POST">
+                                                    <form id="enable2FA">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
                                                         <input type="password" id="password" name="password" class="form-control form-control-m">
+                                                        <!--br>
+                                                        <p id="error" style="display: none; color: red;" class="text-center fw-bold"></p!-->
                                                         <br>
                                                         <div class="d-flex justify-content-end">
-                                                            <button type="submit" class="btn btn-primary ml-auto">Conferma e attiva</button>
+                                                            <button type="button" id="submitEnable2FA" class="btn btn-primary ml-auto">Conferma e attiva</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -191,19 +243,18 @@
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/disable2FA" method="POST">
+                                                    <form id="disable2FA">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
-                                                        <input type="password" id="password" name="password" class="form-control form-control-m">
+                                                        <input type="password" id="password2" name="password" class="form-control form-control-m">
                                                         <br>
                                                         <div class="d-flex justify-content-end">
-                                                            <button type="submit" class="btn btn-danger ml-auto">Conferma e disattiva</button>
+                                                            <button type="button" id="submitDisable2FA" class="btn btn-danger ml-auto">Conferma e disattiva</button>
                                                         </div>
                                                     </form>
                                                 </div>
                                             </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -225,4 +276,109 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="/static/scripts/JS/random_site.js"></script>
+    <script>
+        // DISABLE TWO-STEPS 
+        $('#submitEnable2FA').click(function () {
+            $.ajax({
+                url: '/account/actions/enable2FA',
+                type: 'POST',
+                data: {
+                    password: $('#password').val()
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Gestisci il risultato ottenuto
+                    if (data.risultato === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });
+
+        // DISABLE TWO-STEPS
+        $('#submitDisable2FA').click(function () {
+            $.ajax({
+                url: '/account/actions/disable2FA',
+                type: 'POST',
+                data: {
+                    password: $('#password2').val()
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Gestisci il risultato ottenuto
+                    if (data.result === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });
+        
+        // CHANGE PASSWORD
+        $('#submitChangePassword').click(function () {
+            $.ajax({
+                url: '/account/actions/changePassword',
+                type: 'POST',
+                data: {
+                    currentPassword: $('#currentPassword').val(),
+                    newPassword: $('#newPassword').val(),
+                    confirmNewPassword: $('#confirmNewPassword').val()
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Gestisci il risultato ottenuto
+                    if (data.result === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });      
+    </script>
 </html>
