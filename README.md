@@ -6,6 +6,6 @@ IMPORTANT THINGS TO DO:
 - [ ] FIX ALERTS
 - [x] FINISH 2FA AUTHENTICATION.
 - [x] CONTINUE WITH ACCOUNT SETTINGS THINGS...
-- [ ] FINISH LOGOS
+- [X] FINISH LOGOS
 
 https://stackoverflow.com/questions/19372551/single-sign-on-with-oauth2-or-shared-session
