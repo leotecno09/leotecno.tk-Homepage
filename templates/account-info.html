@@ -122,7 +122,7 @@
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/changeUsername" method="POST">
+                                                    <form id="changeUsername">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
                                                         <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-m">
                                                         <br>
@@ -130,7 +130,7 @@
                                                         <input type="text" id="newUsername" name="newUsername" class="form-control form-control-m">
                                                         <br>
                                                         <div class="d-flex justify-content-end">
-                                                            <button type="submit" class="btn btn-primary ml-auto">Conferma</button>
+                                                            <button type="button" id="submitChangeUsername" class="btn btn-primary ml-auto">Conferma</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -148,15 +148,15 @@
                                                 </span>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="/account/actions/changeEmail" method="POST">
+                                                    <form id="changeEmail">
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">PASSWORD ATTUALE</p>
-                                                        <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-m">
+                                                        <input type="password" id="currentPassword1" name="currentPassword" class="form-control form-control-m">
                                                         <br>
                                                         <p style="font-weight: bold; color: rgb(51, 51, 51);">NUOVA EMAIL</p>
                                                         <input type="email" id="newEmail" name="newEmail" class="form-control form-control-m">
                                                         <br>
                                                         <div class="d-flex justify-content-end">
-                                                            <button type="submit" class="btn btn-primary ml-auto">Conferma</button>
+                                                            <button type="button" id="submitChangeEmail" class="btn btn-primary ml-auto">Conferma</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -185,4 +185,75 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="/static/scripts/JS/random_site.js"></script>
+    <script>
+        // CHANGE USERNAME
+        $('#submitChangeUsername').click(function () {
+            $.ajax({
+                url: '/account/actions/changeUsername',
+                type: 'POST',
+                data: {
+                    currentPassword: $('#currentPassword').val(),
+                    newUsername: $('#newUsername').val()
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Gestisci il risultato ottenuto
+                    if (data.result === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });
+
+        // CHANGE EMAIL
+        $('#submitChangeEmail').click(function () {
+            $.ajax({
+                url: '/account/actions/changeEmail',
+                type: 'POST',
+                data: {
+                    currentPassword: $('#currentPassword1').val(),
+                    newEmail: $('#newEmail').val()
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Gestisci il risultato ottenuto
+                    if (data.result === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });  
+    </script>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,7 +40,37 @@
                         if (index === 0) {
                             setTimeout(function () {
                                 // window.location.href = '/account/actions/deleteAccount1';
-                                document.getElementById('fakeForm').submit();
+                                // DISABLE TWO-STEPS 
+                                $.ajax({
+                                    url: '/account/actions/deleteAccount1',
+                                    type: 'POST',
+                                    data: {
+                                        // password: $('#password').val()
+                                        // nothing to send
+                                    },
+                                    dataType: 'json',
+                                    success: function(data) {
+                                        if (data.result === "error") {
+                                                // $(document).ready(function() {
+                                                //    $('#errorModal').modal('show');
+                                                //    $('#popupText').text(data.popup_text);
+                                                // });
+                                            
+                                                // $(document).ready(function() {
+                                                //    var errorText = document.getElementById("error");
+                                                //    error.style.display = "block";
+                                                //    $('#error').text(data.popup_text);
+                                                // });
+
+                                            alert(data.popup_text);
+                                        } else {
+                                            window.location.href = '/'
+                                        }
+                                        },
+                                    error: function(error) {
+                                        console.log("Errore nella richiesta AJAX:", error);
+                                    }
+                                });
                             }, 1000);
                         }
                     }, (count - index) * 1000);
@@ -79,8 +110,5 @@
     <div id="countdown">
         <h1></h1>
     </div>
-    <form id="fakeForm" action="/account/actions/deleteAccount1" method="POST">
-        <input type="hidden" name="redirect" value="{{redirect}}">
-    </form>
 </body>
 </html>

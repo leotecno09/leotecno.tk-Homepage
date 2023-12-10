@@ -109,7 +109,7 @@ def page_not_found(e):
 # ROUTES
 @app.route('/')
 def root():
-	flash('Benvenuto sul nuovo leotecno.tk!')
+	#flash('Benvenuto sul nuovo leotecno.tk!')
 	return render_template('index.html')
 
 @app.route('/account/register', methods=['GET', 'POST'])
@@ -120,7 +120,7 @@ def register():
 		email = request.form['email']
 		password = request.form['password']
 		passwordConfirm = request.form['passwordConfirm']
-		checkbox = request.form.get('checkbox')
+		checkbox = request.form.get('checkbox') == 'true'
 		print(checkbox)
 
 		# CREATE LATO SERVER
@@ -138,20 +138,28 @@ def register():
 			result = cur.fetchone()
 
 			if result:
-				flash('Un account con questa e-mail esiste già.', category='error')
-				return redirect(url_for('register'))
+				result = "error"
+				popup_text = "Account già esistente."
+
+				return jsonify({"result": result, "popup_text": popup_text})
 
 			elif password != passwordConfirm:
-				flash('Le due password non corrispondono!', category='error')
-				return redirect(url_for('register'))
+				result = "error"
+				popup_text = "Le due password non corrispondono."
+
+				return jsonify({"result": result, "popup_text": popup_text})
 
 			elif len(password) < 7:
-				flash('La password deve contenere almeno 7 caratteri.', category='error')
-				return redirect(url_for('register'))	
+				result = "error"
+				popup_text = "La password deve contenere almeno 7 caratteri."
 
-			elif checkbox is None:
-				flash('Per favore, accetta i termini di servizio.', category='error')
-				return redirect(url_for('register'))
+				return jsonify({"result": result, "popup_text": popup_text})
+
+			elif not checkbox:
+				result = "error"
+				popup_text = "Per favore, accetta i termini di servizio."
+
+				return jsonify({"result": result, "popup_text": popup_text})
 
 			else:									
 				hashed_password = generate_password_hash(password, method='scrypt')
@@ -165,8 +173,9 @@ def register():
 					user.email = email
 					user.logo = logoPath
 					login_user(user, remember=True)
-					flash('Account creato con successo')
-					return redirect(url_for('accountSettings'))
+					result = "success"
+
+					return jsonify({"result": result})
 
 				except Error as e:
 					return redirect(url_for('error', e=e))
@@ -219,7 +228,7 @@ def login():
 							cur.execute('INSERT INTO login_codes (token, code)' 'VALUES (%s, %s)', (format(token), int(login_code),))
 							conn.commit()
 
-							return redirect(url_for('twoStepVerification', token=token, user_id=user_id))			
+							return redirect(url_for('twoStepVerification', token=token, user_id=user_id))		# SOSTITUIRE CON AJAX	
 						
 						except Error as e:
 							return redirect(url_for('error', e=e))
@@ -230,17 +239,22 @@ def login():
 						user.email = email
 						user.logo = logoPath
 						login_user(user, remember=True)
-						flash("Autenticato con successo.")
-						return redirect(url_for('root'))
+						#flash("Autenticato con successo.")
+						result = "success"
+						return jsonify({"result": result})
 				
 				else:
-					flash("Password non corretta", category="error")
-					return redirect(url_for('login'))
+					result = "error"
+					popup_text = "Password errata."
+
+					return jsonify({"result": result, "popup_text": popup_text})
 
 
 			else:
-				flash("Impossibile trovare l'utente inserito", category="error")
-				return redirect(url_for('login'))
+				result = "error"
+				popup_text = "Username errato o account inesistente."
+
+				return jsonify({"result": result, "popup_text": popup_text})
 
 		except Error as e:
 			return redirect(url_for('error', e=e))
@@ -410,14 +424,16 @@ def changeUsername():
 				conn.commit()
 
 				#flash('Username aggiornato con successo.')
-				return redirect(url_for('accountInfo'))
+				result = "success"
+				return jsonify({"result": result})
 			
 			except Error as e:
 				return redirect(url_for('error', e=e))
 		
 		else:
-			flash('Password non corretta.', category='error')
-			return redirect(url_for('accountInfo'))
+			result = "error"
+			popup_text = "Password errata."
+			return jsonify({"result": result, "popup_text": popup_text})
 
 	except Error as e:
 		return redirect(url_for('error', e=e))
@@ -442,15 +458,17 @@ def changeEmail():
 				cur.execute('UPDATE accounts SET email = %s WHERE id = %s', (format(newEmail), int(id)))
 				conn.commit()
 
-				flash('Email aggiornata con successo.')
-				return redirect(url_for('accountInfo'))
+				result = "success"
+				return jsonify({"result": result})
 			
 			except Error as e:
 				return redirect(url_for('error', e=e))
 		
 		else:
-			flash('Password non corretta.', category='error')
-			return redirect(url_for('accountInfo'))
+			result = "error"
+			popup_text = "Password errata."
+			
+			return jsonify({"result": result, "popup_text": popup_text})
 
 	except Error as e:
 		return redirect(url_for('error', e=e))
@@ -527,7 +545,7 @@ def disable2FA():
 	
 @app.route('/account/actions/deleteAccount', methods=['POST'])
 def delAccount():
-	password = request.form['currentPassword']
+	password = request.form['password']
 	id = current_user.id
 
 	try:
@@ -537,33 +555,38 @@ def delAccount():
 		stored_password = result[2]
 	
 		if check_password_hash(stored_password, password):
-			
-			return render_template('blowing_up_account.html', redirect="server")
+			result = "success"
+
+			return jsonify({"result": result})
 		
 		else:
-			return "password errata"
+			result = "error"
+			popup_text = "Password errata."
+
+			return jsonify({"result": result, "popup_text": popup_text})
 		
 	except Error as e:
 		return redirect(url_for('error', e=e))
+
+@app.route('/hidden/deep/blowing_up_your_account', methods=['POST'])
+def hiddenBlowUp():	
+	return render_template('blowing_up_account.html')
 	
 @app.route('/account/actions/deleteAccount1', methods=['POST'])
 def effettivoDelAccount():
-	whoRedirected = request.form['redirect']
 	id = current_user.id
 
-	if whoRedirected == "server":
+	try:
+		logout_user()
+		cur.execute('DELETE FROM accounts WHERE id = %s', (int(id),))
+		conn.commit()
 
-		try:
-			logout_user()
-			cur.execute('DELETE FROM accounts WHERE id = %s', (int(id),))
-			conn.commit()
+		result = "success"
 
-			return redirect(url_for('root'))
+		return jsonify({"result": result})
 
-		except Error as e:
-			return redirect(url_for('error', e=e))	
-	else:
-		return "non va bene"
+	except Error as e:
+		return redirect(url_for('error', e=e))	
 
 @app.route('/account/actions/changeLogo', methods=['POST'])
 def changeLogo():
