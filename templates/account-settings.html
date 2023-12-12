@@ -26,6 +26,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <nav class="navbar navbar-expand-lg navbar-dark navbar-shadow shadow-lg fixed-top">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -150,12 +151,12 @@
                         </span>
                         </div>
                         <div class="modal-body">
-                            <form action="/account/actions/changeLogo" method="POST" enctype="multipart/form-data">
+                            <form id="changeLogo" enctype="multipart/form-data">
                                 <label class="form-label" for="customFile">Carica un'immagine</label>
                                 <input type="file" class="form-control" id="logo" name="logo" />
                                 <br>
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">Applica</button>
+                                    <button type="button" id="submitChangeLogo" class="btn btn-primary">Applica</button>
                                 </div>                             
                             </form>
                         </div>
@@ -170,12 +171,52 @@
     <!--SCRIPTS-->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script!-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--script src="https://code.jquery.com/jquery-3.6.0.min.js"></script!-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="/static/scripts/JS/random_site.js"></script>
+    <script>
+        // CHANGE LOGO
+        $('#submitChangeLogo').click(function () {
+            var formData = new FormData();
+
+            var fileInput = $('#logo')[0].files[0];
+            formData.append('logo', fileInput);
+
+            $.ajax({
+                url: '/account/actions/changeLogo',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(data) {
+                    // Gestisci il risultato ottenuto
+                    if (data.result === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });
+    </script>
 </html>

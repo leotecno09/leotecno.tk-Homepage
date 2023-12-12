@@ -109,8 +109,25 @@ def page_not_found(e):
 # ROUTES
 @app.route('/')
 def root():
-	#flash('Benvenuto sul nuovo leotecno.tk!')
-	return render_template('index.html')
+	user_agent = request.headers.get('User-Agent', '')
+	is_smartphone = any(keyword in user_agent for keyword in ['Mobile', 'Android', 'iPhone', 'iPad'])
+
+	if is_smartphone:
+		return render_template('mobilewarn.html')
+	else:
+		return render_template('index.html')
+	
+@app.route('/n')
+def homeNoCheck():
+	user_agent = request.headers.get('User-Agent', '')
+
+	is_desktop = not any(keyword in user_agent for keyword in ['Mobile', 'Android', 'iPhone', 'iPad'])
+
+	if is_desktop:
+		return redirect(url_for('root'))
+	
+	else:
+		return render_template('index.html')
 
 @app.route('/account/register', methods=['GET', 'POST'])
 def register():
@@ -228,7 +245,9 @@ def login():
 							cur.execute('INSERT INTO login_codes (token, code)' 'VALUES (%s, %s)', (format(token), int(login_code),))
 							conn.commit()
 
-							return redirect(url_for('twoStepVerification', token=token, user_id=user_id))		# SOSTITUIRE CON AJAX	
+							#params = {'token': token, 'user_id': user_id}
+							#redirect_url = url_for('twoStepVerification')
+							return jsonify({'redirect': f'/account/login/twostepsverification?token={token}&user_id={user_id}'})	# SOSTITUIRE CON AJAX	
 						
 						except Error as e:
 							return redirect(url_for('error', e=e))
@@ -266,10 +285,12 @@ def twoStepVerification():
 	if request.method == 'POST':
 		token = request.form['token']
 		user_id = request.form['user_id']
+		#token = request.args.get('token')
+		#user_id = request.args.get('user_id')
 		code = request.form['code']
 		#print(code)
 		#print(token)
-		#print(user_id)
+		#  print(user_id)
 
 		cur.execute('SELECT * FROM login_codes WHERE token = %s', (token,))
 		result = cur.fetchone()
@@ -296,12 +317,13 @@ def twoStepVerification():
 			token = 0
 			code = 0
 
-			flash("Autenticato con successo.")
-			return redirect(url_for('root'))
+			result = "success"
+			return jsonify({'result': result})
 
 		else:
-			flash('Codice errato', category='error')
-			return redirect(url_for('twoStepVerification', token=token, user_id=user_id))	
+			result = "error"
+			popup_text = "Codice di autenticazione errato."
+			return jsonify({'result': result, 'popup_text': popup_text})
 
 
 
@@ -372,26 +394,33 @@ def changePassword():
 
 		if check_password_hash(stored_password, currentPassword):
 			
-			if newPassword == confirmNewPassword:
-				new_hashed_password = generate_password_hash(newPassword, method='scrypt')
-
-				now = datetime.now()
-				formatted_datetime = now.strftime("%d/%m/%Y %H:%M:%S")
-
-				creation_date = formatted_datetime
-
-				cur.execute('UPDATE accounts SET password = %s, last_password_change = %s WHERE id = %s', (format(new_hashed_password), format(creation_date), int(id)))
-				conn.commit()
-
-				#flash('Password aggiornata con successo.')
-				result = "success"
-				return jsonify({"result": result})
-
-			else:
-				#flash('Le due nuove password non corrispondono.', category='error')
+			if len(newPassword) < 7:
 				result = "error"
-				popup_text = "Le due password non corrispondono."
-				return jsonify({"result": result, "popup_text": popup_text})
+				popup_text = "La password deve contenere almeno 7 caratteri."
+				return jsonify({'result': result, 'popup_text': popup_text})
+			
+			else:
+
+				if newPassword == confirmNewPassword:
+					new_hashed_password = generate_password_hash(newPassword, method='scrypt')
+
+					now = datetime.now()
+					formatted_datetime = now.strftime("%d/%m/%Y %H:%M:%S")
+
+					creation_date = formatted_datetime
+
+					cur.execute('UPDATE accounts SET password = %s, last_password_change = %s WHERE id = %s', (format(new_hashed_password), format(creation_date), int(id)))
+					conn.commit()
+
+					#flash('Password aggiornata con successo.')
+					result = "success"
+					return jsonify({"result": result})
+
+				else:
+					#flash('Le due nuove password non corrispondono.', category='error')
+					result = "error"
+					popup_text = "Le due password non corrispondono."
+					return jsonify({"result": result, "popup_text": popup_text})
 
 		else:
 				result = "error"
@@ -410,12 +439,17 @@ def changeUsername():
 	id = current_user.id
 
 	try:
-		logoPath = chooseLogo(newUsername)
-
 		cur.execute('SELECT * FROM accounts WHERE id = %s', (int(id),))
 		result = cur.fetchone()
 
+		logo_dir = result[7]
 		stored_password = result[2]
+
+		if "uploaded" in logo_dir:
+			logoPath = logo_dir
+		
+		else:
+			logoPath = chooseLogo(newUsername)
 
 		if check_password_hash(stored_password, currentPassword):
 			
@@ -596,8 +630,9 @@ def changeLogo():
 	logo = request.files['logo']
 
 	if logo.filename == '':
-		flash('Seleziona un file.', category='error')
-		return redirect(url_for('accountSettings'))
+		result = "error"
+		popup_text = "Seleziona un file."
+		return jsonify({'result': result, 'popup_text': popup_text})
 	
 	if logo and allowed_file(logo.filename):
 		filename = secure_filename(username + '.' + logo.filename.rsplit('.', 1)[1].lower())
@@ -612,11 +647,13 @@ def changeLogo():
 		except Error as e:
 			return redirect(url_for('error', e=e))
 
-		return redirect(url_for('accountSettings'))
+		result = "success"
+		return jsonify({'result': result})
 	
 	else:
-		flash('Formato file non valido', category='error')
-		return redirect(url_for('accountSettings'))
+		result = "error"
+		popup_text = "Formato file non valido."
+		return jsonify({'result': result, 'popup_text': popup_text})
 
 
 
@@ -705,28 +742,28 @@ def error():
 	error = request.args.get('e')
 	return render_template('global-error.html', error=error)
 
-@app.route('/login-test')
-@login_required
-def logintest():
-	return f"Questa è una pagina protetta. Benvenuto, {current_user.id}!"
+#@app.route('/login-test')
+#@login_required
+#def logintest():
+#	return f"Questa è una pagina protetta. Benvenuto, {current_user.id}!"
 
-@app.route('/send-me-mail')
-def sendmail():
-	message = Message(
-		subject = 'Hello from Flask',
-		recipients = ['leotecno09@gmail.com'],
-		sender = 'flask@leotecno.tk'
-	)
-
-	message.body = "Questo è un test."
-	
-	try:
-		mail.send(message)
-		print("Email di verifica inviata")
-		return 'OK'
-	
-	except Error as e:
-		return redirect(url_for('error', e=e))
+#@app.route('/send-me-mail')
+#def sendmail():
+#	message = Message(
+#		subject = 'Hello from Flask',
+#		recipients = ['leotecno09@gmail.com'],
+#		sender = 'flask@leotecno.tk'
+#	)
+#
+#	message.body = "Questo è un test."
+#	
+#	try:
+#		mail.send(message)
+#		print("Email di verifica inviata")
+#		return 'OK'
+#	
+#	except Error as e:
+#		return redirect(url_for('error', e=e))
 	
 @app.route('/test', methods=['GET', 'POST'])
 def test():

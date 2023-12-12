@@ -85,6 +85,7 @@
       </section>
     </body>
     <script>
+        // LOGIN
         $('#submitLogin').click(function () {
             $.ajax({
                 url: '/account/login',
@@ -96,7 +97,10 @@
                 dataType: 'json',
                 success: function(data) {
                     // Gestisci il risultato ottenuto
-                    if (data.result === "error") {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    
+                    } else if (data.result === "error") {
                         // $(document).ready(function() {
                         //    $('#errorModal').modal('show');
                         //    $('#popupText').text(data.popup_text);

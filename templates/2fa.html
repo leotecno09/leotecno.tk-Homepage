@@ -27,7 +27,8 @@
         <title>2FA | leotecno.tk</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">\
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     </head>
     <body>   
       <section class="vh-100 bg-image">
@@ -60,66 +61,22 @@
                 <div class="card" style="background: rgba(255, 255, 255, 0.411); border: none; margin-top: 100px;">
                   <div class="card-body p-5">
                     <h2 class="text-uppercase text-center mb-5">Verifica in due passaggi</h2>
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                      {% if messages %}
-                        {% for category, message in messages %}
-                          {% if category == 'error' %}
-                            <p style="color: red;" class="text-center fw-bold">{{ message }}</p>
-                            <br>
-                            <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
-          
-                            <form action="/account/login/twostepsverification" method="POST">
-        
-                              <input type="hidden" name="token" value="{{token}}">
-                              <input type="hidden" name="user_id" value="{{user_id}}">
-              
-                              <div class="form-outline mb-4">
-                                <input type="text" id="code" name="code" style="border-color: red;" class="form-control form-control-lg" placeholder="Inserisci il codice" />
-                              </div>
-        
-                              <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary">Procedi</button>
-                              </div>
-              
-                            </form>
-                          {% else %}
-                            <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
-          
-                            <form action="/account/login/twostepsverification" method="POST">
-        
-                              <input type="hidden" name="token" value="{{token}}">
-                              <input type="hidden" name="user_id" value="{{user_id}}">
-              
-                              <div class="form-outline mb-4">
-                                <input type="text" id="code" name="code" class="form-control form-control-lg" placeholder="Inserisci il codice" />
-                              </div>
-        
-                              <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary">Procedi</button>
-                              </div>
-              
-                            </form>
-                          {% endif %}
-                        {% endfor %}
-                      {% else %}
                         <p>Controlla la tua casella di posta per un eventuale codice che ti è stato inviato</p>
         
-                        <form action="/account/login/twostepsverification" method="POST">
+                        <form id="2FA">
     
-                          <input type="hidden" name="token" value="{{token}}">
-                          <input type="hidden" name="user_id" value="{{user_id}}">
+                          <input type="hidden" id="token" value="{{token}}">
+                          <input type="hidden" id="user_id" value="{{user_id}}">
           
                           <div class="form-outline mb-4">
                             <input type="text" id="code" name="code" class="form-control form-control-lg" placeholder="Inserisci il codice" />
                           </div>
     
                           <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">Procedi</button>
+                            <button type="button" id="submit2FA" class="btn btn-primary">Procedi</button>
                           </div>
           
-                        </form>
-                      {% endif %}
-                    {% endwith %}      
+                        </form>    
                   </div>
                 </div>
               </div>
@@ -128,4 +85,40 @@
         </div>
       </section>
     </body>
+    <script>
+        // 2FA
+        $('#submit2FA').click(function () {
+            $.ajax({
+                url: '/account/login/twostepsverification',
+                type: 'POST',
+                data: {
+                  code: $('#code').val(),
+                  token: $('#token').val(),
+                  user_id: $('#user_id').val()
+                },
+                dataType: 'json',
+                success: function(data) {                  
+                    if (data.result === "error") {
+                        // $(document).ready(function() {
+                        //    $('#errorModal').modal('show');
+                        //    $('#popupText').text(data.popup_text);
+                        // });
+                    
+                        // $(document).ready(function() {
+                        //    var errorText = document.getElementById("error");
+                        //    error.style.display = "block";
+                        //    $('#error').text(data.popup_text);
+                        // });
+
+                        alert(data.popup_text);
+                    } else {
+                        window.location.href = "/account/settings";
+                    }
+                },
+                error: function(error) {
+                    console.log("Errore nella richiesta AJAX:", error);
+                }
+            });
+        });  
+    </script>
 </html>
